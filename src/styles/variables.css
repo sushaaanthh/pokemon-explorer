@@ -100,8 +100,8 @@
   --color-text-tertiary: #6B7080;
   --color-border: rgba(255, 255, 255, 0.08);
   --color-border-hover: rgba(255, 255, 255, 0.14);
-  --color-accent: #E8364E;
-  --color-accent-hover: #D12E44;
+  --color-accent: #F7D02C;
+  --color-accent-hover: #E6B800;
   --color-overlay: rgba(0, 0, 0, 0.6);
 
   --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -121,8 +121,8 @@
   --color-text-tertiary: #9B9EA6;
   --color-border: rgba(0, 0, 0, 0.08);
   --color-border-hover: rgba(0, 0, 0, 0.14);
-  --color-accent: #E8364E;
-  --color-accent-hover: #D12E44;
+  --color-accent: #F7D02C;
+  --color-accent-hover: #D6AC00;
   --color-overlay: rgba(0, 0, 0, 0.3);
 
   --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06);
