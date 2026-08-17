@@ -12,9 +12,7 @@ export function SearchBar({ onSearch, onClear }: SearchBarProps) {
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-      if (value.trim()) {
-        onSearch(value.trim());
-      }
+      onSearch(value.trim());
     },
     [value, onSearch]
   );

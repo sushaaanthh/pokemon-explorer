@@ -38,6 +38,13 @@ export async function getPokemonDetailsBatch(names: string[]): Promise<Pokemon[]
   return Promise.all(promises);
 }
 
+export async function getPokemonNamesByType(type: string): Promise<string[]> {
+  const data = await fetchJson<{
+    pokemon: { pokemon: { name: string; url: string } }[];
+  }>(`${API_BASE}/type/${type}`);
+  return data.pokemon.map(entry => entry.pokemon.name);
+}
+
 export async function getPokemonByType(type: string): Promise<Pokemon[]> {
   const data = await fetchJson<{
     pokemon: { pokemon: { name: string; url: string } }[];

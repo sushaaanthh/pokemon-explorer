@@ -4,6 +4,31 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 @import './variables.css';
 
+@font-face {
+  font-family: 'Gang of Three';
+  src: url('../assets/fonts/go3v2.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Prevent faux-bold/italic rendering for display font */
+h1, h2, h3, h4, h5, h6,
+.hero__title,
+.pokemon-card__name,
+.compare-title,
+.compare-vs-badge,
+.compare-id,
+.compare-name,
+.compare-section-heading,
+.detail-artwork-id,
+.detail-name,
+.detail-section-heading,
+.featured__id,
+.featured h2 {
+  font-synthesis: none;
+}
+
 /* ---- Reset ---- */
 *,
 *::before,
