@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import vaultUpper from '../assets/vault/vault-upper.png';
@@ -25,57 +25,59 @@ export function useVaultNavigation() {
 export function VaultTransitionProvider({ children }: { children: ReactNode }) {
   // initial load starts 'closed'
   const [vaultState, setVaultState] = useState<VaultState>('closed');
-  const [hasStarted, setHasStarted] = useState(false);
   const navigateReactRouter = useNavigate();
   const location = useLocation();
+  const initialized = useRef(false);
+  const pendingNav = useRef<string | null>(null);
 
   useEffect(() => {
-    if (hasStarted) return;
-    setHasStarted(true);
+    if (initialized.current) return;
+    initialized.current = true;
     
     // Initial opening sequence
-    const holdTimer = setTimeout(() => {
+    setTimeout(() => {
       setVaultState('opening');
-      setTimeout(() => {
-        setVaultState('idle');
-      }, 600); // Wait for open animation to finish
     }, 500); // 500ms hold on start
 
-    return () => {
-      clearTimeout(holdTimer);
-    };
-  }, [hasStarted]);
+    // Deliberately not clearing timeout on unmount to ensure 
+    // StrictMode double-invocations don't permanently break the initialization
+  }, []);
 
   const navigateWithVault = useCallback((to: string) => {
     if (vaultState !== 'idle') return; // block duplicate navigations
     
-    // Check if it's the exact same route. Note: location.pathname handles query params differently,
-    // but for simple routes this is enough.
+    // Check if it's the exact same route
     if (location.pathname === to) return; 
 
+    pendingNav.current = to;
     // Start transition
     setVaultState('closing');
+  }, [vaultState, location.pathname]);
 
-    // Wait for close animation (~550ms)
-    setTimeout(() => {
+  const handleTransitionEnd = (e: React.TransitionEvent<HTMLImageElement>) => {
+    // Only react to the primary transition property
+    if (e.propertyName !== 'transform' && e.propertyName !== 'opacity') return;
+
+    if (vaultState === 'closing') {
       setVaultState('closed');
       
       // Perform route change
-      navigateReactRouter(to);
-      window.scrollTo(0, 0); // Reset scroll position during closed state
+      if (pendingNav.current) {
+        navigateReactRouter(pendingNav.current);
+        pendingNav.current = null;
+        window.scrollTo(0, 0); // Reset scroll position during closed state
+      }
 
       // Hold closed for 500ms, then open
       setTimeout(() => {
         setVaultState('opening');
-        
-        // Wait for open animation (~550ms), then idle
-        setTimeout(() => {
-          setVaultState('idle');
-        }, 600);
       }, 500);
 
-    }, 550);
-  }, [vaultState, location.pathname, navigateReactRouter]);
+    } else if (vaultState === 'opening') {
+      // Vault has finished opening, hide it
+      setVaultState('idle');
+    }
+  };
 
   const isActive = vaultState !== 'idle';
 
@@ -86,7 +88,12 @@ export function VaultTransitionProvider({ children }: { children: ReactNode }) {
         className={`vault-overlay ${isActive ? 'vault-active' : ''} vault-${vaultState}`}
         aria-hidden="true"
       >
-        <img className="vault-panel vault-upper" src={vaultUpper} alt="" />
+        <img 
+          className="vault-panel vault-upper" 
+          src={vaultUpper} 
+          alt="" 
+          onTransitionEnd={handleTransitionEnd}
+        />
         <img className="vault-panel vault-lower" src={vaultLower} alt="" />
       </div>
     </VaultContext.Provider>

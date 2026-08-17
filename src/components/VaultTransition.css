@@ -8,11 +8,13 @@
   display: flex;
   flex-direction: column;
   pointer-events: none; /* Allow interaction with app when idle */
+  visibility: hidden; /* Fully hide when idle */
   overflow: hidden;
 }
 
 .vault-active {
   pointer-events: auto; /* Capture clicks during transition */
+  visibility: visible; /* Show during transition */
 }
 
 .vault-panel {
