@@ -1,0 +1,35 @@
+/* ===================================================
+   FAVORITE BUTTON
+   =================================================== */
+
+.fav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-pill);
+  color: var(--color-text-tertiary);
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4px);
+  transition: color var(--transition-fast),
+              transform var(--transition-spring),
+              background var(--transition-fast);
+}
+
+.fav-btn:hover {
+  color: var(--color-accent);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.fav-btn--active {
+  color: var(--color-accent);
+}
+
+.fav-btn:active {
+  transform: scale(0.85);
+}
+
+.fav-btn--active:active {
+  transform: scale(1.15);
+}

@@ -1,0 +1,53 @@
+/* ===================================================
+   TYPE FILTER
+   =================================================== */
+
+.type-filter {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.type-filter::-webkit-scrollbar {
+  display: none;
+}
+
+.type-filter__btn {
+  flex-shrink: 0;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  white-space: nowrap;
+  transition: background var(--transition-fast),
+              color var(--transition-fast),
+              border-color var(--transition-fast),
+              transform var(--transition-fast);
+}
+
+.type-filter__btn:hover {
+  color: var(--color-text-primary);
+  border-color: var(--type-color, var(--color-border-hover));
+  background: var(--color-surface-secondary);
+}
+
+.type-filter__btn--active {
+  color: #fff;
+  font-weight: var(--fw-semibold);
+}
+
+.type-filter__btn--active:first-child {
+  background: var(--color-text-primary);
+  border-color: var(--color-text-primary);
+  color: var(--color-background);
+}
+
+.type-filter__btn:active {
+  transform: scale(0.96);
+}
