@@ -1,7 +1,7 @@
 /* ===================================================
    GLOBAL STYLES – Pokémon Explorer
    =================================================== */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 @import './variables.css';
 
 /* ---- Reset ---- */
@@ -27,6 +27,7 @@ body {
   line-height: var(--lh-normal);
   color: var(--color-text-primary);
   background-color: var(--color-background);
+  background-image: radial-gradient(circle at top, color-mix(in srgb, var(--color-accent) 8%, transparent) 0, transparent 45%);
   transition: background-color var(--transition-base),
               color var(--transition-base);
   min-height: 100vh;
