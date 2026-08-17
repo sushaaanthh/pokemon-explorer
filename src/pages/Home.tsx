@@ -6,6 +6,7 @@ import { TypeFilter } from '../components/TypeFilter';
 import { SortSelect } from '../components/SortSelect';
 import { PokemonGrid } from '../components/PokemonGrid';
 import { EmptyState } from '../components/EmptyState';
+import pokeballImage from '../assets/branding/pokeball.png';
 import './pages.css';
 
 interface Props {
@@ -51,7 +52,7 @@ export function Home(props: Props) {
         <div className="hero__feature">
           <div className="hero-pokeball">
             <span className="hero-pokeball__glow" aria-hidden="true" />
-            <img src="/pokeball.png" alt="Poké Ball" className="hero-pokeball__image" />
+            <img src={pokeballImage} alt="Poké Ball" className="hero-pokeball__image" />
           </div>
         </div>
       </section>

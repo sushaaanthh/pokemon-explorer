@@ -6,6 +6,7 @@ import { Home } from './pages/Home';
 import { Favorites } from './pages/Favorites';
 import { Comparison } from './pages/Comparison';
 import { PokemonDetails } from './pages/PokemonDetails';
+import { VaultTransitionProvider } from './components/VaultTransitionContext';
 
 function App() {
   const { theme, toggleTheme } = useTheme();
@@ -16,17 +17,19 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Navigation
-        theme={theme}
-        onToggleTheme={toggleTheme}
-        favoritesCount={favorites.length}
-      />
-      <Routes>
-        <Route path="/" element={<Home favorites={favorites} comparison={comparison} onToggleFavorite={toggleFavorite} onToggleComparison={toggleComparison} />} />
-        <Route path="/favorites" element={<Favorites favorites={favorites} comparison={comparison} onToggleFavorite={toggleFavorite} onToggleComparison={toggleComparison} />} />
-        <Route path="/compare" element={<Comparison comparison={comparison} />} />
-        <Route path="/pokemon/:name" element={<PokemonDetails />} />
-      </Routes>
+      <VaultTransitionProvider>
+        <Navigation
+          theme={theme}
+          onToggleTheme={toggleTheme}
+          favoritesCount={favorites.length}
+        />
+        <Routes>
+          <Route path="/" element={<Home favorites={favorites} comparison={comparison} onToggleFavorite={toggleFavorite} onToggleComparison={toggleComparison} />} />
+          <Route path="/favorites" element={<Favorites favorites={favorites} comparison={comparison} onToggleFavorite={toggleFavorite} onToggleComparison={toggleComparison} />} />
+          <Route path="/compare" element={<Comparison comparison={comparison} />} />
+          <Route path="/pokemon/:name" element={<PokemonDetails />} />
+        </Routes>
+      </VaultTransitionProvider>
     </BrowserRouter>
   );
 }

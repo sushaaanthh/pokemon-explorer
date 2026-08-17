@@ -1,0 +1,75 @@
+/* src/components/VaultTransition.css */
+.vault-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none; /* Allow interaction with app when idle */
+  overflow: hidden;
+}
+
+.vault-active {
+  pointer-events: auto; /* Capture clicks during transition */
+}
+
+.vault-panel {
+  width: 100%;
+  height: 50vh;
+  object-fit: cover;
+  transition: transform 0.55s cubic-bezier(0.76, 0, 0.24, 1);
+  will-change: transform;
+}
+
+.vault-upper {
+  object-position: bottom center;
+  height: calc(50vh + 1px); /* 1px overlap for clean seal */
+  transform: translateY(-100%);
+}
+
+.vault-lower {
+  object-position: top center;
+  transform: translateY(100%);
+}
+
+/* Close the vault */
+.vault-closing .vault-upper,
+.vault-closed .vault-upper {
+  transform: translateY(0);
+}
+
+.vault-closing .vault-lower,
+.vault-closed .vault-lower {
+  transform: translateY(0);
+}
+
+/* Hold state locks the vault in place to avoid subpixel jitter */
+.vault-closed .vault-panel {
+  transition: none;
+}
+
+/* Handle reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .vault-panel {
+    transition: opacity 0.3s ease !important;
+  }
+  
+  .vault-upper {
+    transform: translateY(0) !important;
+    opacity: 0;
+  }
+  
+  .vault-lower {
+    transform: translateY(0) !important;
+    opacity: 0;
+  }
+  
+  .vault-closing .vault-upper,
+  .vault-closed .vault-upper,
+  .vault-closing .vault-lower,
+  .vault-closed .vault-lower {
+    opacity: 1;
+  }
+}
