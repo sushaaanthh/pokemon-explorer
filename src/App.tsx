@@ -11,7 +11,7 @@ import { VaultTransitionProvider } from './components/VaultTransitionContext';
 function App() {
   const { theme, toggleTheme } = useTheme();
   const [favorites, setFavorites] = useState<string[]>([]);
-  const [comparison, setComparison] = useState<string[]>(['pikachu', 'charizard']);
+  const [comparison, setComparison] = useState<string[]>([]);
   const toggleFavorite = (name: string) => setFavorites(current => current.includes(name) ? current.filter(item => item !== name) : [...current, name]);
   const toggleComparison = (name: string) => setComparison(current => current.includes(name) ? current.filter(item => item !== name) : current.length < 2 ? [...current, name] : current);
 
