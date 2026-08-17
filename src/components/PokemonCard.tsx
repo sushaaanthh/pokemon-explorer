@@ -1,4 +1,4 @@
-import { VaultLink } from './VaultLink';
+import { Link } from 'react-router-dom';
 import type { Pokemon } from '../types/pokemon';
 import { getTypeColor } from '../utils/pokemonTypeColors';
 import { formatPokemonId } from '../utils/formatPokemonId';
@@ -38,7 +38,7 @@ export function PokemonCard({
   const hpStat = pokemon.stats.find(s => s.stat.name === 'hp');
 
   return (
-    <VaultLink
+    <Link
       to={`/pokemon/${pokemon.name}`}
       className="pokemon-card"
       style={{ '--card-type-color': typeColor } as React.CSSProperties}
@@ -94,6 +94,6 @@ export function PokemonCard({
           onToggle={onToggleCompare}
         />
       </div>
-    </VaultLink>
+    </Link>
   );
 }

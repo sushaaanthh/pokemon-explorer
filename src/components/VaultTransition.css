@@ -27,7 +27,7 @@
 
 .vault-upper {
   object-position: bottom center;
-  height: calc(50vh + 1px); /* 1px overlap for clean seal */
+  height: 50vh;
   transform: translateY(-100%);
 }
 
@@ -44,7 +44,7 @@
 
 .vault-closing .vault-lower,
 .vault-closed .vault-lower {
-  transform: translateY(0);
+  transform: translateY(-0.5px);
 }
 
 /* Hold state locks the vault in place to avoid subpixel jitter */
