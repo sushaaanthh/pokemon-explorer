@@ -66,9 +66,8 @@ export function Home() {
       setAllHasMore(!!listResponse.next);
       setAllTotalCount(listResponse.count);
       setMode('all');
-    } catch (e) {
+    } catch {
       if (!isMounted.current) return;
-      console.error(e);
       setError(true);
     } finally {
       if (isMounted.current) {
@@ -95,9 +94,8 @@ export function Home() {
       setTypePokemonDetailed(detailResponses);
       setTypeOffset(20);
       setMode('type');
-    } catch (e) {
+    } catch {
       if (!isMounted.current) return;
-      console.error(e);
       setError(true);
     } finally {
       if (isMounted.current) {
@@ -129,9 +127,8 @@ export function Home() {
 
       setSearchPokemon([result]);
       setMode('search');
-    } catch (e) {
+    } catch {
       if (!isMounted.current) return;
-      console.error(e);
       setSearchPokemon([]);
       setError(true);
       setMode('search');
@@ -197,9 +194,8 @@ export function Home() {
         setTypePokemonDetailed(prev => [...prev, ...detailResponses]);
         setTypeOffset(prev => prev + 20);
       }
-    } catch (e) {
+    } catch {
       if (!isMounted.current) return;
-      console.error(e);
       setLoadMoreError(true);
     } finally {
       if (isMounted.current) {

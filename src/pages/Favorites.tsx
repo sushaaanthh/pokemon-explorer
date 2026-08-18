@@ -28,8 +28,7 @@ export function Favorites() {
         favorites.map((id) => getPokemon(id))
       );
       setPokemon(results);
-    } catch (e) {
-      console.error(e);
+    } catch {
       setError(true);
     } finally {
       setLoading(false);

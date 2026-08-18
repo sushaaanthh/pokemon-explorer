@@ -45,6 +45,8 @@ export function Comparison() {
   const [typeLoading, setTypeLoading] = useState(false);
   const [typeError, setTypeError] = useState(false);
   const [typeLoadingMore, setTypeLoadingMore] = useState(false);
+  const [typeLoadMoreError, setTypeLoadMoreError] = useState(false);
+  const [selectionLoadMoreError, setSelectionLoadMoreError] = useState(false);
 
   // Fetch comparison data when slots change
   useEffect(() => {
@@ -68,9 +70,8 @@ export function Comparison() {
           results[0] ?? null,
           results[1] ?? null
         ]);
-      } catch (e) {
+      } catch {
         if (!active) return;
-        console.error(e);
         setError(true);
       } finally {
         if (active) {
@@ -106,8 +107,7 @@ export function Comparison() {
         setTypeOffset(SELECTION_PAGE_SIZE);
         setTypeHasMore(names.length > SELECTION_PAGE_SIZE);
       })
-      .catch(e => {
-        console.error(e);
+      .catch(() => {
         setTypeError(true);
       })
       .finally(() => {
@@ -142,8 +142,7 @@ export function Comparison() {
           setSelectionOffset(SELECTION_PAGE_SIZE);
           setSelectionHasMore(!!listResponse.next);
         })
-        .catch(e => {
-          console.error(e);
+        .catch(() => {
           setSelectionError(true);
         })
         .finally(() => {
@@ -166,6 +165,9 @@ export function Comparison() {
 
   // Load more selection pokemon
   const loadMoreSelection = useCallback(async () => {
+    setTypeLoadMoreError(false);
+    setSelectionLoadMoreError(false);
+
     // Type-filtered mode: load more from the type's name list (same as the Dex)
     if (selectedType && !searchQuery) {
       if (typeLoadingMore || !typeHasMore) return;
@@ -177,7 +179,7 @@ export function Comparison() {
         setTypeOffset(prev => prev + SELECTION_PAGE_SIZE);
         setTypeHasMore(typeNames.length > typeOffset + SELECTION_PAGE_SIZE);
       } catch (e) {
-        console.error(e);
+        setTypeLoadMoreError(true);
       } finally {
         setTypeLoadingMore(false);
       }
@@ -196,7 +198,7 @@ export function Comparison() {
       setSelectionOffset(prev => prev + SELECTION_PAGE_SIZE);
       setSelectionHasMore(!!listResponse.next);
     } catch (e) {
-      console.error(e);
+      setSelectionLoadMoreError(true);
     } finally {
       setSelectionLoadingMore(false);
     }
@@ -217,8 +219,7 @@ export function Comparison() {
       const searchParam = isNaN(Number(trimmed)) ? trimmed.toLowerCase() : Number(trimmed);
       const result = await getPokemon(searchParam);
       setSelectionSearchResults([result]);
-    } catch (e) {
-      console.error(e);
+    } catch {
       setSelectionSearchResults([]);
       setSelectionError(true);
     } finally {
@@ -344,14 +345,25 @@ export function Comparison() {
               />
               {!searchQuery && hasMore && (
                 <div className="compare-selection__load-more">
-                  <button
-                    className="load-more"
-                    onClick={loadMoreSelection}
-                    disabled={isLoadingMore}
-                    style={{ margin: 0 }}
-                  >
-                    {isLoadingMore ? 'Loading…' : 'Load More'}
-                  </button>
+                  {(selectedType && typeLoadMoreError) || (!selectedType && selectionLoadMoreError) ? (
+                    <div style={{ textAlign: 'center' }}>
+                      <p style={{ color: 'var(--color-accent)', fontWeight: 'var(--fw-bold)', fontSize: '0.9rem', marginBottom: '12px' }}>
+                        Couldn't load more Pokémon.
+                      </p>
+                      <button className="state__action" onClick={loadMoreSelection} style={{ margin: 0 }}>
+                        Retry
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      className="load-more"
+                      onClick={loadMoreSelection}
+                      disabled={isLoadingMore}
+                      style={{ margin: 0 }}
+                    >
+                      {isLoadingMore ? 'Loading…' : 'Load More'}
+                    </button>
+                  )}
                 </div>
               )}
             </>

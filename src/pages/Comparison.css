@@ -360,7 +360,7 @@
   border-radius: 999px;
   border: 1px solid var(--color-border);
   background: var(--color-surface-secondary);
-  color: var(--color-text-secondary);
+  color: var(--color-text-primary);
   font-size: 0.8rem;
   font-weight: var(--fw-semibold);
   letter-spacing: 0.06em;
@@ -370,6 +370,7 @@
 }
 
 .compare-selection__cancel:hover {
-  color: var(--color-text-primary);
-  border-color: var(--color-border-hover);
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent);
 }
