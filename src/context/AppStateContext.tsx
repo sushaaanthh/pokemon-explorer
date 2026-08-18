@@ -12,6 +12,7 @@ interface AppStateContextType {
   comparison: number[];
   isCompareSelected: (id: number) => boolean;
   toggleComparison: (id: number) => void;
+  setComparisonSlot: (slotIndex: 0 | 1, id: number) => void;
   removeFromComparison: (id: number) => void;
   clearComparison: () => void;
   comparisonCount: number;
@@ -43,6 +44,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     comparison: comparisonHook.comparison,
     isCompareSelected: comparisonHook.isCompareSelected,
     toggleComparison: comparisonHook.toggleComparison,
+    setComparisonSlot: comparisonHook.setComparisonSlot,
     removeFromComparison: comparisonHook.removeFromComparison,
     clearComparison: comparisonHook.clearComparison,
     comparisonCount: comparisonHook.count,

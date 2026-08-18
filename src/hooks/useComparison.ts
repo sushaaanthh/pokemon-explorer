@@ -64,6 +64,31 @@ export function useComparison() {
     }
   }, [comparison]);
 
+  /**
+   * Assign a Pokémon to a specific comparison slot (0 or 1).
+   * Used by the /compare selection interface. Keeps the other
+   * slot's selection intact and prevents duplicates.
+   */
+  const setComparisonSlot = useCallback((slotIndex: 0 | 1, id: number) => {
+    setComparison(prev => {
+      const current = [...prev];
+      const otherId = current[1 - slotIndex];
+
+      // Build the two-slot layout
+      const next: (number | null)[] = [null, null];
+
+      // Preserve the other slot unless it's the same Pokémon (no duplicates)
+      if (otherId !== undefined && otherId !== id) {
+        next[1 - slotIndex] = otherId;
+      }
+
+      next[slotIndex] = id;
+
+      // Collapse empty slots so comparison stays a compact list
+      return next.filter((v): v is number => v !== null && v !== undefined);
+    });
+  }, []);
+
   const removeFromComparison = useCallback((id: number) => {
     setComparison(prev => prev.filter(cid => cid !== id));
   }, []);
@@ -80,6 +105,7 @@ export function useComparison() {
   return {
     comparison,
     toggleComparison,
+    setComparisonSlot,
     removeFromComparison,
     clearComparison,
     isCompareSelected,

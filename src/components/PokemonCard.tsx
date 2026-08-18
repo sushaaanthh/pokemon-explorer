@@ -10,6 +10,8 @@ import './PokemonCard.css';
 
 interface PokemonCardProps {
   pokemon: Pokemon;
+  /** Optional override for the compare action when rendered inside /compare */
+  onSelect?: (id: number) => void;
 }
 
 function getArtwork(pokemon: Pokemon): string {
@@ -20,7 +22,7 @@ function getArtwork(pokemon: Pokemon): string {
   );
 }
 
-export function PokemonCard({ pokemon }: PokemonCardProps) {
+export function PokemonCard({ pokemon, onSelect }: PokemonCardProps) {
   const { isFavorite, toggleFavorite, isCompareSelected, toggleComparison } = useAppState();
   const primaryType = pokemon.types[0]?.type.name ?? 'normal';
   const typeColor = getTypeColor(primaryType);
@@ -30,6 +32,14 @@ export function PokemonCard({ pokemon }: PokemonCardProps) {
   const favorite = isFavorite(pokemon.id);
   const compareSelected = isCompareSelected(pokemon.id);
   const compareDisabled = false; // Always clickable so the "full" notice can display
+
+  const handleCompare = () => {
+    if (onSelect) {
+      onSelect(pokemon.id);
+    } else {
+      toggleComparison(pokemon.id);
+    }
+  };
 
   return (
     <Link
@@ -85,7 +95,7 @@ export function PokemonCard({ pokemon }: PokemonCardProps) {
         <CompareButton
           isSelected={compareSelected}
           disabled={compareDisabled}
-          onToggle={() => toggleComparison(pokemon.id)}
+          onToggle={handleCompare}
         />
       </div>
     </Link>

@@ -1,24 +1,41 @@
 import { useEffect, useState, useCallback } from 'react';
+import type { CSSProperties } from 'react';
 import type { Pokemon } from '../types/pokemon';
 import { getTypeColor } from '../utils/pokemonTypeColors';
 import { formatPokemonId } from '../utils/formatPokemonId';
 import { formatPokemonName } from '../utils/formatPokemonName';
-import { getPokemon } from '../services/pokemonApi';
+import { getPokemon, getPokemonList, getPokemonDetailsBatch } from '../services/pokemonApi';
 import { EmptyState } from '../components/EmptyState';
 import { ErrorState } from '../components/ErrorState';
+import { LoadingSkeleton } from '../components/LoadingSkeleton';
+import { SearchBar } from '../components/SearchBar';
+import { PokemonGrid } from '../components/PokemonGrid';
 import { useAppState } from '../context/AppStateContext';
 import './pages.css';
 import './Comparison.css';
 
 const COMPARE_STATS = ['hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed'];
+const SELECTION_PAGE_SIZE = 20;
 
 export function Comparison() {
-  const { comparison, removeFromComparison } = useAppState();
+  const { comparison, removeFromComparison, setComparisonSlot } = useAppState();
   const [pokemonList, setPokemonList] = useState<(Pokemon | null)[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
 
+  // In-page selection state
+  const [selectionSlot, setSelectionSlot] = useState<0 | 1 | null>(null);
+  const [selectionPokemon, setSelectionPokemon] = useState<Pokemon[]>([]);
+  const [selectionOffset, setSelectionOffset] = useState(0);
+  const [selectionHasMore, setSelectionHasMore] = useState(true);
+  const [selectionLoading, setSelectionLoading] = useState(false);
+  const [selectionLoadingMore, setSelectionLoadingMore] = useState(false);
+  const [selectionError, setSelectionError] = useState(false);
+  const [selectionSearchResults, setSelectionSearchResults] = useState<Pokemon[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Fetch comparison data when slots change
   useEffect(() => {
     let active = true;
     if (comparison.length === 0) {
@@ -58,10 +75,163 @@ export function Comparison() {
     };
   }, [comparison, retryCount]);
 
+  // Open the selection interface for a slot
+  const openSelection = useCallback((slot: 0 | 1) => {
+    setSelectionSlot(slot);
+    setSearchQuery('');
+    setSelectionSearchResults([]);
+    // Preload the first page if not yet loaded
+    if (selectionPokemon.length === 0 && !selectionLoading) {
+      setSelectionLoading(true);
+      setSelectionError(false);
+      getPokemonList(SELECTION_PAGE_SIZE, 0)
+        .then(async listResponse => {
+          const detailResponses = await getPokemonDetailsBatch(
+            listResponse.results.map(item => item.name)
+          );
+          setSelectionPokemon(detailResponses);
+          setSelectionOffset(SELECTION_PAGE_SIZE);
+          setSelectionHasMore(!!listResponse.next);
+        })
+        .catch(e => {
+          console.error(e);
+          setSelectionError(true);
+        })
+        .finally(() => {
+          setSelectionLoading(false);
+        });
+    }
+  }, [selectionPokemon.length, selectionLoading]);
+
+  // Load more selection pokemon
+  const loadMoreSelection = useCallback(async () => {
+    if (selectionLoadingMore || !selectionHasMore) return;
+    setSelectionLoadingMore(true);
+    try {
+      const listResponse = await getPokemonList(SELECTION_PAGE_SIZE, selectionOffset);
+      const detailResponses = await getPokemonDetailsBatch(
+        listResponse.results.map(item => item.name)
+      );
+      setSelectionPokemon(prev => [...prev, ...detailResponses]);
+      setSelectionOffset(prev => prev + SELECTION_PAGE_SIZE);
+      setSelectionHasMore(!!listResponse.next);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setSelectionLoadingMore(false);
+    }
+  }, [selectionOffset, selectionHasMore, selectionLoadingMore]);
+
+  // Search within comparison selection
+  const handleSelectionSearch = useCallback(async (query: string) => {
+    const trimmed = query.trim();
+    setSearchQuery(trimmed);
+    if (!trimmed) {
+      setSelectionSearchResults([]);
+      return;
+    }
+
+    setSelectionLoading(true);
+    setSelectionError(false);
+    try {
+      const searchParam = isNaN(Number(trimmed)) ? trimmed.toLowerCase() : Number(trimmed);
+      const result = await getPokemon(searchParam);
+      setSelectionSearchResults([result]);
+    } catch (e) {
+      console.error(e);
+      setSelectionSearchResults([]);
+      setSelectionError(true);
+    } finally {
+      setSelectionLoading(false);
+    }
+  }, []);
+
+  // Select a pokemon for the active slot
+  const handleSelectPokemon = useCallback((id: number) => {
+    if (selectionSlot === null) return;
+    setComparisonSlot(selectionSlot, id);
+    setSelectionSlot(null);
+  }, [selectionSlot, setComparisonSlot]);
+
+  // Remove a pokemon from comparison by slot
+  const handleRemoveSlot = useCallback((slotIndex: 0 | 1) => {
+    const pokemon = pokemonList[slotIndex];
+    if (pokemon) {
+      removeFromComparison(pokemon.id);
+    }
+  }, [pokemonList, removeFromComparison]);
+
   const handleRetry = useCallback(() => {
     setRetryCount(prev => prev + 1);
   }, []);
 
+  // -------- Selection interface view --------
+  if (selectionSlot !== null) {
+    const slotLabel = selectionSlot === 0 ? 'Pokémon A' : 'Pokémon B';
+    const displayedSelection = searchQuery && selectionSearchResults.length > 0
+      ? selectionSearchResults
+      : selectionPokemon;
+
+    return (
+      <main className="compare-page">
+        <p className="compare-eyebrow">Choose {slotLabel}</p>
+        <h1 className="compare-title">Select Pokémon</h1>
+
+        <div className="compare-selection">
+          <div className="compare-selection__search">
+            <SearchBar onSearch={handleSelectionSearch} onClear={() => handleSelectionSearch('')} />
+          </div>
+
+          {selectionLoading && !displayedSelection.length && <LoadingSkeleton />}
+
+          {!selectionLoading && selectionError && displayedSelection.length === 0 && (
+            <div className="compare-selection__state">
+              <ErrorState onRetry={() => openSelection(selectionSlot)} />
+            </div>
+          )}
+
+          {!selectionLoading && !selectionError && displayedSelection.length === 0 && (
+            <div className="compare-selection__state">
+              <EmptyState
+                title="No Pokémon found."
+                text="Try adjusting your search query."
+                action={false}
+              />
+            </div>
+          )}
+
+          {!selectionLoading && !selectionError && displayedSelection.length > 0 && (
+            <>
+              <PokemonGrid pokemon={displayedSelection} onSelect={handleSelectPokemon} />
+              {!searchQuery && selectionHasMore && (
+                <div className="compare-selection__load-more">
+                  <button
+                    className="load-more"
+                    onClick={loadMoreSelection}
+                    disabled={selectionLoadingMore}
+                    style={{ margin: 0 }}
+                  >
+                    {selectionLoadingMore ? 'Loading…' : 'Load More'}
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+
+          <div className="compare-selection__footer">
+            <button
+              className="compare-selection__cancel"
+              onClick={() => setSelectionSlot(null)}
+            >
+              ← Cancel
+            </button>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  // -------- Loading state --------
   if (isLoading) {
     return (
       <main className="compare-page">
@@ -76,6 +246,7 @@ export function Comparison() {
     );
   }
 
+  // -------- Error state --------
   if (error) {
     return (
       <main className="compare-page">
@@ -88,26 +259,29 @@ export function Comparison() {
     );
   }
 
+  const [leftPokemon, rightPokemon] = pokemonList;
+  const leftColor = leftPokemon ? getTypeColor(leftPokemon.types[0].type.name) : 'var(--color-border)';
+  const rightColor = rightPokemon ? getTypeColor(rightPokemon.types[0].type.name) : 'var(--color-border)';
+
+  // -------- Empty state (no comparison selections) --------
   if (comparison.length === 0) {
     return (
       <main className="compare-page">
         <p className="compare-eyebrow">Compare Pokémon</p>
         <h1 className="compare-title">No Pokémon Selected</h1>
         <div style={{ maxWidth: '600px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <EmptyState 
-            title="Comparison stage is empty." 
-            text="Go to the Pokédex and click 'Compare' on any two Pokémon to see their stats side-by-side." 
+          <EmptyState
+            title="Comparison stage is empty."
+            text="Choose two Pokémon to see their stats side-by-side."
             action={true}
+            onAction={() => openSelection(0)}
           />
         </div>
       </main>
     );
   }
 
-  const [leftPokemon, rightPokemon] = pokemonList;
-  const leftColor = leftPokemon ? getTypeColor(leftPokemon.types[0].type.name) : 'var(--color-border)';
-  const rightColor = rightPokemon ? getTypeColor(rightPokemon.types[0].type.name) : 'var(--color-border)';
-
+  // -------- Comparison view with slots --------
   return (
     <main className="compare-page">
       <p className="compare-eyebrow">Choose your champions</p>
@@ -115,21 +289,42 @@ export function Comparison() {
 
       {/* Comparison Stage */}
       <section className="compare-stage">
-        
+
         {/* Left Pokemon / Empty Slot */}
         {leftPokemon ? (
-          <article className="compare-panel" style={{ '--card-type-color': leftColor } as React.CSSProperties}>
+          <article
+            className="compare-panel"
+            style={{ '--card-type-color': leftColor } as CSSProperties}
+            role="button"
+            tabIndex={0}
+            onClick={() => openSelection(0)}
+            onKeyDown={e => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                openSelection(0);
+              }
+            }}
+          >
             <span className="compare-glow" aria-hidden="true" />
             <span className="compare-id">{formatPokemonId(leftPokemon.id)}</span>
             <button
               className="compare-remove"
-              onClick={() => removeFromComparison(leftPokemon.id)}
+              onClick={e => {
+                e.stopPropagation();
+                handleRemoveSlot(0);
+              }}
               aria-label={`Remove ${formatPokemonName(leftPokemon.name)} from comparison`}
               title="Remove from comparison"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18" />
                 <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+            <button className="compare-replace" aria-label={`Replace ${formatPokemonName(leftPokemon.name)}`} title="Change Pokémon" onClick={() => openSelection(0)}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="1 4 1 10 7 10" />
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
               </svg>
             </button>
             <div className="compare-image-container">
@@ -140,7 +335,7 @@ export function Comparison() {
               />
             </div>
             <h2 className="compare-name">{formatPokemonName(leftPokemon.name)}</h2>
-            <span 
+            <span
               className="compare-type-badge"
               style={{ backgroundColor: leftColor }}
             >
@@ -148,18 +343,30 @@ export function Comparison() {
             </span>
           </article>
         ) : (
-          <div className="compare-panel compare-panel--empty">
+          <article
+            className="compare-panel compare-panel--empty"
+            role="button"
+            tabIndex={0}
+            onClick={() => openSelection(0)}
+            onKeyDown={e => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                openSelection(0);
+              }
+            }}
+            title="Choose Pokémon A"
+          >
             <span className="compare-id">#???</span>
             <div className="compare-image-container">
               <div style={{ width: '130px', height: '130px', borderRadius: '50%', background: 'rgba(255,255,255,0.03)', border: '2px dashed rgba(255,255,255,0.1)', display: 'grid', placeItems: 'center' }}>
                 <span style={{ fontSize: '2rem', color: 'rgba(255,255,255,0.2)' }}>?</span>
               </div>
             </div>
-            <h2 className="compare-name" style={{ color: 'var(--color-text-tertiary)' }}>Empty Slot</h2>
+            <h2 className="compare-name" style={{ color: 'var(--color-text-tertiary)' }}>Choose Pokémon</h2>
             <span className="compare-type-badge" style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--color-text-tertiary)' }}>
-              No Selection
+              Tap to select
             </span>
-          </div>
+          </article>
         )}
 
         {/* VS Badge */}
@@ -167,18 +374,39 @@ export function Comparison() {
 
         {/* Right Pokemon / Empty Slot */}
         {rightPokemon ? (
-          <article className="compare-panel" style={{ '--card-type-color': rightColor } as React.CSSProperties}>
+          <article
+            className="compare-panel"
+            style={{ '--card-type-color': rightColor } as CSSProperties}
+            role="button"
+            tabIndex={0}
+            onClick={() => openSelection(1)}
+            onKeyDown={e => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                openSelection(1);
+              }
+            }}
+          >
             <span className="compare-glow" aria-hidden="true" />
             <span className="compare-id">{formatPokemonId(rightPokemon.id)}</span>
             <button
               className="compare-remove"
-              onClick={() => removeFromComparison(rightPokemon.id)}
+              onClick={e => {
+                e.stopPropagation();
+                handleRemoveSlot(1);
+              }}
               aria-label={`Remove ${formatPokemonName(rightPokemon.name)} from comparison`}
               title="Remove from comparison"
             >
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18" />
                 <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+            <button className="compare-replace" aria-label={`Replace ${formatPokemonName(rightPokemon.name)}`} title="Change Pokémon" onClick={() => openSelection(1)}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="1 4 1 10 7 10" />
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
               </svg>
             </button>
             <div className="compare-image-container">
@@ -189,7 +417,7 @@ export function Comparison() {
               />
             </div>
             <h2 className="compare-name">{formatPokemonName(rightPokemon.name)}</h2>
-            <span 
+            <span
               className="compare-type-badge"
               style={{ backgroundColor: rightColor }}
             >
@@ -197,18 +425,30 @@ export function Comparison() {
             </span>
           </article>
         ) : (
-          <div className="compare-panel compare-panel--empty">
+          <article
+            className="compare-panel compare-panel--empty"
+            role="button"
+            tabIndex={0}
+            onClick={() => openSelection(1)}
+            onKeyDown={e => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                openSelection(1);
+              }
+            }}
+            title="Choose Pokémon B"
+          >
             <span className="compare-id">#???</span>
             <div className="compare-image-container">
               <div style={{ width: '130px', height: '130px', borderRadius: '50%', background: 'rgba(255,255,255,0.03)', border: '2px dashed rgba(255,255,255,0.1)', display: 'grid', placeItems: 'center' }}>
                 <span style={{ fontSize: '2rem', color: 'rgba(255,255,255,0.2)' }}>?</span>
               </div>
             </div>
-            <h2 className="compare-name" style={{ color: 'var(--color-text-tertiary)' }}>Empty Slot</h2>
+            <h2 className="compare-name" style={{ color: 'var(--color-text-tertiary)' }}>Choose Pokémon</h2>
             <span className="compare-type-badge" style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--color-text-tertiary)' }}>
-              No Selection
+              Tap to select
             </span>
-          </div>
+          </article>
         )}
 
       </section>
@@ -253,8 +493,18 @@ export function Comparison() {
         <section className="compare-stats-section" style={{ textAlign: 'center', padding: '48px' }}>
           <p className="compare-section-title">Awaiting Contenders</p>
           <h2 className="compare-section-heading" style={{ fontSize: '1.6rem', marginBottom: '16px' }}>Select another Pokémon</h2>
-          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', maxWidth: '400px', margin: '0 auto' }}>
-            Add a second Pokémon from the Pokédex to activate the head-to-head comparison bar.
+          <button
+            className="state__action"
+            onClick={() => {
+              const nextSlot = leftPokemon ? 1 : 0;
+              openSelection(nextSlot as 0 | 1);
+            }}
+            style={{ margin: 0 }}
+          >
+            Choose Pokémon
+          </button>
+          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', maxWidth: '400px', margin: '24px auto 0' }}>
+            Select a Pokémon to activate the head-to-head comparison.
           </p>
         </section>
       )}
