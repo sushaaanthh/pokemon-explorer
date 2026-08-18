@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import type { PokemonTypeName, SortOption, Pokemon } from '../types/pokemon';
 import { SearchBar } from '../components/SearchBar';
 import { TypeFilter } from '../components/TypeFilter';
@@ -12,6 +13,7 @@ import pokeballImage from '../assets/branding/pokeball.png';
 import './pages.css';
 
 export function Home() {
+  const location = useLocation();
   const [mode, setMode] = useState<'all' | 'search' | 'type'>('all');
 
   // 'all' mode state
@@ -33,6 +35,25 @@ export function Home() {
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState<SortOption>('id');
 
+  // Restore search/filter state from URL param or location.state
+  // Preserves state when navigating to Details and returning
+  useEffect(() => {
+    // Priority 1: restore from location.state (Details → Home back navigation)
+    if (location.state?.query && location.state?.mode === 'search') {
+      setQuery(location.state.query);
+      setMode('search');
+    }
+    // Priority 2: restore from URL ?q= param (reload, bookmark, etc.)
+    else if (location.search && mode === 'all') {
+      const urlParams = new URLSearchParams(location.search);
+      const savedQuery = urlParams.get('q') ?? '';
+      if (savedQuery && savedQuery !== query) {
+        setQuery(savedQuery);
+        setMode('search');
+      }
+    }
+  }, [location.state, location.search, query, mode]);
+
   // Loading & Error states
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -40,11 +61,15 @@ export function Home() {
   const [loadMoreError, setLoadMoreError] = useState(false);
 
   const isMounted = useRef(true);
+  const searchTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     isMounted.current = true;
     return () => {
       isMounted.current = false;
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
     };
   }, []);
 
@@ -135,6 +160,14 @@ export function Home() {
     } finally {
       if (isMounted.current) {
         setIsLoading(false);
+        // Update URL search param to preserve search state when navigating to Details and returning
+        const url = new URL(window.location.href);
+        if (query.trim()) {
+          url.searchParams.set('q', query.trim());
+        } else {
+          url.searchParams.delete('q');
+        }
+        window.history.replaceState({}, document.title, url);
       }
     }
   }, [allPokemon.length, fetchAllInitial]);
@@ -144,10 +177,15 @@ export function Home() {
     fetchAllInitial();
   }, [fetchAllInitial]);
 
-  // Handle Search Input submissions
+  // Handle Search Input submissions (debounced)
   useEffect(() => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
     if (query !== '') {
-      performSearch(query);
+      searchTimeoutRef.current = setTimeout(() => {
+        performSearch(query);
+      }, 300);
     } else {
       setMode('all');
     }
@@ -338,7 +376,14 @@ export function Home() {
           )}
           
           {!isLoading && !error && displayedPokemon.length > 0 && (
-            <PokemonGrid pokemon={displayedPokemon} />
+            <PokemonGrid
+              pokemon={displayedPokemon}
+              linkState={{
+                query,
+                mode,
+                selectedType: selectedType,
+              }}
+            />
           )}
         </div>
 

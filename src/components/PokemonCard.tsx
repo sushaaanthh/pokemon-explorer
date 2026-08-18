@@ -92,7 +92,7 @@ export function PokemonCard({ pokemon, onSelect, linkState }: PokemonCardProps) 
       <div className="pokemon-card__footer">
         {hpStat && (
           <span className="pokemon-card__stat">
-            HP <strong>{hpStat.base_stat}</strong>
+            <strong>{hpStat.base_stat}</strong>
           </span>
         )}
         <CompareButton

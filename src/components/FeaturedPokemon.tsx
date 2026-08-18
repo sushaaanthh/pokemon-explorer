@@ -6,7 +6,8 @@ import { formatPokemonId } from '../utils/formatPokemonId';
 import { formatPokemonName } from '../utils/formatPokemonName';
 import './PokemonCard.css';
 
-function createFallbackArt(pokemon: Pokemon) {
+export function createFallbackArt(pokemon: Pokemon | null) {
+  if (!pokemon) return '';
   const label = formatPokemonName(pokemon.name).toUpperCase();
   const id = formatPokemonId(pokemon.id);
   const svg = `

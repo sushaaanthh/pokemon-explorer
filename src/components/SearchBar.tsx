@@ -21,11 +21,17 @@ export function SearchBar({ onSearch, onClear }: SearchBarProps) {
     (e: React.KeyboardEvent) => {
       if (e.key === 'Escape') {
         setValue('');
+        onSearch('');
         onClear();
       }
     },
-    [onClear]
+    [onClear, onSearch]
   );
+
+  const handleClear = useCallback(() => {
+    setValue('');
+    onSearch('');
+  }, [onSearch]);
 
   return (
     <form className="search-bar" onSubmit={handleSubmit} role="search">
@@ -45,6 +51,16 @@ export function SearchBar({ onSearch, onClear }: SearchBarProps) {
         aria-label="Search Pokémon by name"
         id="pokemon-search"
       />
+      {value.trim().length > 0 && (
+        <button
+          type="button"
+          className="search-bar__clear"
+          aria-label="Clear search"
+          onClick={handleClear}
+        >
+          ×
+        </button>
+      )}
       <button type="submit" className="search-bar__submit" aria-label="Submit search">
         Search
       </button>

@@ -1,5 +1,5 @@
 import { useParams, Link, useLocation } from 'react-router-dom';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import type { Pokemon } from '../types/pokemon';
 import { getPokemon } from '../services/pokemonApi';
 import { getTypeColor } from '../utils/pokemonTypeColors';
@@ -8,6 +8,7 @@ import { formatPokemonName } from '../utils/formatPokemonName';
 import { ErrorState } from '../components/ErrorState';
 import { FavoriteButton } from '../components/FavoriteButton';
 import { CompareButton } from '../components/CompareButton';
+import { createFallbackArt } from '../components/FeaturedPokemon';
 import { useAppState } from '../context/AppStateContext';
 import './pages.css';
 import './PokemonDetails.css';
@@ -21,9 +22,10 @@ export function PokemonDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [showAllMoves, setShowAllMoves] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [statsAnimated, setStatsAnimated] = useState(false);
+  const fallbackArt = useMemo(() => createFallbackArt(pokemon), [pokemon]);
   const { isFavorite, toggleFavorite, isCompareSelected, toggleComparison } = useAppState();
-
-  // Context-aware back navigation: remember where the user came from.
   const backFromCompare = (location.state as { from?: string } | null)?.from === '/compare';
   const backTo = backFromCompare ? '/compare' : '/';
   const backLabel = backFromCompare ? 'Back to Compare' : 'Back to Dex';
@@ -52,6 +54,15 @@ export function PokemonDetails() {
     fetchPokemon();
     window.scrollTo(0, 0);
   }, [fetchPokemon]);
+
+  // Animate stat bars when the page loads
+  useEffect(() => {
+    if (pokemon) {
+      const timer = setTimeout(() => setStatsAnimated(true), 300);
+      return () => clearTimeout(timer);
+    }
+    setStatsAnimated(false);
+  }, [pokemon]);
 
   // Dynamic document title
   useEffect(() => {
@@ -138,8 +149,11 @@ export function PokemonDetails() {
     pokemon.sprites.front_default ??
     '';
 
+  const imgSrc = artworkUrl && !imageError ? artworkUrl : fallbackArt;
+
   const heightMeters = (pokemon.height / 10).toFixed(1);
   const weightKg = (pokemon.weight / 10).toFixed(1);
+  const totalStats = pokemon.stats.reduce((sum, s) => sum + s.base_stat, 0);
 
   const visibleMoves = showAllMoves
     ? pokemon.moves
@@ -148,25 +162,35 @@ export function PokemonDetails() {
 
   return (
     <main className="detail-page" style={{ '--card-type-color': primaryColor } as React.CSSProperties}>
-      <Link to={backTo} className="detail-back">
+      <Link to={backTo} className="detail-back" state={location.state}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="15 18 9 12 15 6" />
         </svg>
         {backLabel}
       </Link>
 
+      <nav className="detail-nav" aria-label="Pokémon navigation">
+        {pokemon.id > 1 && (
+          <Link to={`/pokemon/${pokemon.id - 1}`} className="detail-nav__btn detail-nav__btn--prev">
+            ← Prev
+          </Link>
+        )}
+        <Link to={`/pokemon/${pokemon.id + 1}`} className="detail-nav__btn detail-nav__btn--next">
+          Next →
+        </Link>
+      </nav>
+
       <div className="detail-layout">
         {/* Left: Artwork Panel */}
         <section className="detail-artwork-panel">
           <span className="detail-artwork-glow" aria-hidden="true" />
           <span className="detail-artwork-id">{formatPokemonId(pokemon.id)}</span>
-          {artworkUrl && (
-            <img
-              src={artworkUrl}
-              alt={`${formatPokemonName(pokemon.name)} artwork`}
-              className="detail-artwork-image"
-            />
-          )}
+          <img
+            src={imgSrc}
+            alt={`${formatPokemonName(pokemon.name)} artwork`}
+            className="detail-artwork-image"
+            onError={() => setImageError(true)}
+          />
         </section>
 
         {/* Right: Info Panel */}
@@ -225,7 +249,7 @@ export function PokemonDetails() {
           {/* Base Stats */}
           <div className="detail-stats">
             <p className="detail-section-title">Base Stats</p>
-            {pokemon.stats.map((s) => {
+            {pokemon.stats.map((s, index) => {
               const maxStat = 255;
               const percentage = Math.min((s.base_stat / maxStat) * 100, 100);
 
@@ -235,13 +259,29 @@ export function PokemonDetails() {
                   <div className="stat-bar-container" role="progressbar" aria-valuenow={s.base_stat} aria-valuemin={0} aria-valuemax={maxStat} aria-label={`${formatPokemonName(s.stat.name)}: ${s.base_stat}`}>
                     <div
                       className="stat-bar-fill"
-                      style={{ width: `${percentage}%` }}
+                      style={{
+                        width: statsAnimated ? `${percentage}%` : '0%',
+                        transitionDelay: `${index * 0.1}s`
+                      }}
                     />
                   </div>
                   <span className="stat-value">{s.base_stat}</span>
                 </div>
               );
             })}
+            <div className="stat-row stat-row--total">
+              <span className="stat-name">Total</span>
+              <div className="stat-bar-container">
+                <div
+                  className="stat-bar-fill stat-bar-fill--total"
+                  style={{
+                    width: statsAnimated ? `${Math.min((totalStats / (255 * 6)) * 100, 100)}%` : '0%',
+                    transitionDelay: `${pokemon.stats.length * 0.1}s`
+                  }}
+                />
+              </div>
+              <span className="stat-value">{totalStats}</span>
+            </div>
           </div>
 
           {/* Moves */}
