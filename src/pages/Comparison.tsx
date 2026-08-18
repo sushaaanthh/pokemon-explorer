@@ -4,7 +4,7 @@ import type { Pokemon, PokemonTypeName } from '../types/pokemon';
 import { getTypeColor } from '../utils/pokemonTypeColors';
 import { formatPokemonId } from '../utils/formatPokemonId';
 import { formatPokemonName } from '../utils/formatPokemonName';
-import { getPokemon, getPokemonList, getPokemonDetailsBatch } from '../services/pokemonApi';
+import { getPokemon, getPokemonList, getPokemonDetailsBatch, getPokemonNamesByType } from '../services/pokemonApi';
 import { EmptyState } from '../components/EmptyState';
 import { ErrorState } from '../components/ErrorState';
 import { LoadingSkeleton } from '../components/LoadingSkeleton';
@@ -19,7 +19,7 @@ const COMPARE_STATS = ['hp', 'attack', 'defense', 'special-attack', 'special-def
 const SELECTION_PAGE_SIZE = 20;
 
 export function Comparison() {
-  const { comparison, removeFromComparison, setComparisonSlot } = useAppState();
+  const { comparison, removeFromComparison, setComparisonSlot, clearComparison } = useAppState();
   const [pokemonList, setPokemonList] = useState<(Pokemon | null)[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -36,6 +36,15 @@ export function Comparison() {
   const [selectionSearchResults, setSelectionSearchResults] = useState<Pokemon[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState<PokemonTypeName | null>(null);
+
+  // Type-filtered selection state — reuses the same API approach as the Dex (Home)
+  const [typePokemonDetailed, setTypePokemonDetailed] = useState<Pokemon[]>([]);
+  const [typeNames, setTypeNames] = useState<string[]>([]);
+  const [typeOffset, setTypeOffset] = useState(0);
+  const [typeHasMore, setTypeHasMore] = useState(false);
+  const [typeLoading, setTypeLoading] = useState(false);
+  const [typeError, setTypeError] = useState(false);
+  const [typeLoadingMore, setTypeLoadingMore] = useState(false);
 
   // Fetch comparison data when slots change
   useEffect(() => {
@@ -76,6 +85,45 @@ export function Comparison() {
       active = false;
     };
   }, [comparison, retryCount]);
+
+  // Fetch all Pokémon of a selected type — same API approach as the Dex (Home)
+  const fetchTypeData = useCallback(() => {
+    if (!selectedType) return;
+
+    setTypeLoading(true);
+    setTypeError(false);
+    setTypePokemonDetailed([]);
+    setTypeNames([]);
+    setTypeOffset(0);
+    setTypeHasMore(false);
+
+    getPokemonNamesByType(selectedType)
+      .then(async names => {
+        setTypeNames(names);
+        const initialNames = names.slice(0, SELECTION_PAGE_SIZE);
+        const details = await getPokemonDetailsBatch(initialNames);
+        setTypePokemonDetailed(details);
+        setTypeOffset(SELECTION_PAGE_SIZE);
+        setTypeHasMore(names.length > SELECTION_PAGE_SIZE);
+      })
+      .catch(e => {
+        console.error(e);
+        setTypeError(true);
+      })
+      .finally(() => {
+        setTypeLoading(false);
+      });
+  }, [selectedType]);
+
+  // Re-fetch type data when the selected type changes
+  useEffect(() => {
+    if (!selectedType) {
+      setTypePokemonDetailed([]);
+      setTypeNames([]);
+      return;
+    }
+    fetchTypeData();
+  }, [selectedType, fetchTypeData]);
 
   // Shared preload logic for the selection interface
   const preloadSelection = useCallback(() => {
@@ -118,6 +166,25 @@ export function Comparison() {
 
   // Load more selection pokemon
   const loadMoreSelection = useCallback(async () => {
+    // Type-filtered mode: load more from the type's name list (same as the Dex)
+    if (selectedType && !searchQuery) {
+      if (typeLoadingMore || !typeHasMore) return;
+      setTypeLoadingMore(true);
+      try {
+        const nextBatchNames = typeNames.slice(typeOffset, typeOffset + SELECTION_PAGE_SIZE);
+        const detailResponses = await getPokemonDetailsBatch(nextBatchNames);
+        setTypePokemonDetailed(prev => [...prev, ...detailResponses]);
+        setTypeOffset(prev => prev + SELECTION_PAGE_SIZE);
+        setTypeHasMore(typeNames.length > typeOffset + SELECTION_PAGE_SIZE);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setTypeLoadingMore(false);
+      }
+      return;
+    }
+
+    // General list mode: load more from the paginated list endpoint
     if (selectionLoadingMore || !selectionHasMore) return;
     setSelectionLoadingMore(true);
     try {
@@ -133,7 +200,7 @@ export function Comparison() {
     } finally {
       setSelectionLoadingMore(false);
     }
-  }, [selectionOffset, selectionHasMore, selectionLoadingMore]);
+  }, [selectionOffset, selectionHasMore, selectionLoadingMore, selectedType, searchQuery, typeNames, typeOffset, typeHasMore, typeLoadingMore]);
 
   // Search within comparison selection
   const handleSelectionSearch = useCallback(async (query: string) => {
@@ -178,17 +245,46 @@ export function Comparison() {
     setRetryCount(prev => prev + 1);
   }, []);
 
-  // Combine search results with type filtering (always called, per hooks rules)
-  const baseSelection = searchQuery && selectionSearchResults.length > 0
-    ? selectionSearchResults
-    : selectionPokemon;
+  // Compute active data source and loading/error/hasMore states
+  const isSearching = searchQuery !== '';
+  const isListLoading = isSearching
+    ? selectionLoading
+    : selectedType
+      ? typeLoading
+      : selectionLoading;
+  const isListError = isSearching
+    ? selectionError
+    : selectedType
+      ? typeError
+      : selectionError;
+  const hasMore = isSearching
+    ? false
+    : selectedType
+      ? typeHasMore
+      : selectionHasMore;
+  const isLoadingMore = isSearching
+    ? false
+    : selectedType
+      ? typeLoadingMore
+      : selectionLoadingMore;
 
   const displayedSelection = useMemo(() => {
-    if (!selectedType) return baseSelection;
-    return baseSelection.filter(p =>
-      p.types.some(t => t.type.name === selectedType)
-    );
-  }, [baseSelection, selectedType]);
+    // When searching, use search results (optionally filter by type)
+    if (searchQuery !== '') {
+      if (!selectedType) return selectionSearchResults;
+      return selectionSearchResults.filter(p =>
+        p.types.some(t => t.type.name === selectedType)
+      );
+    }
+
+    // When a type is selected (no search), use type-filtered API results
+    if (selectedType) {
+      return typePokemonDetailed;
+    }
+
+    // Otherwise, use the general list
+    return selectionPokemon;
+  }, [searchQuery, selectionSearchResults, selectedType, typePokemonDetailed, selectionPokemon]);
 
   // -------- Selection interface view --------
   if (selectionMode !== null) {
@@ -212,20 +308,24 @@ export function Comparison() {
             <TypeFilter selected={selectedType} onSelect={setSelectedType} />
           </div>
 
-          {selectionLoading && !displayedSelection.length && <LoadingSkeleton />}
+          {isListLoading && !displayedSelection.length && <LoadingSkeleton />}
 
-          {!selectionLoading && selectionError && displayedSelection.length === 0 && (
+          {!isListLoading && isListError && displayedSelection.length === 0 && (
             <div className="compare-selection__state">
               <ErrorState
                 onRetry={() => {
-                  if (selectionMode === 'free') openFreeSelection();
-                  else if (selectionMode !== null) openSelection(selectionMode);
+                  if (selectedType && !searchQuery) {
+                    fetchTypeData();
+                  } else {
+                    if (selectionMode === 'free') openFreeSelection();
+                    else if (selectionMode !== null) openSelection(selectionMode);
+                  }
                 }}
               />
             </div>
           )}
 
-          {!selectionLoading && !selectionError && displayedSelection.length === 0 && (
+          {!isListLoading && !isListError && displayedSelection.length === 0 && (
             <div className="compare-selection__state">
               <EmptyState
                 title="No Pokémon found."
@@ -235,22 +335,22 @@ export function Comparison() {
             </div>
           )}
 
-          {!selectionLoading && !selectionError && displayedSelection.length > 0 && (
+          {!isListLoading && !isListError && displayedSelection.length > 0 && (
             <>
               <PokemonGrid
                 pokemon={displayedSelection}
                 onSelect={isFreeMode ? undefined : handleSelectPokemon}
                 linkState={{ from: '/compare' }}
               />
-              {!searchQuery && !selectedType && selectionHasMore && (
+              {!searchQuery && hasMore && (
                 <div className="compare-selection__load-more">
                   <button
                     className="load-more"
                     onClick={loadMoreSelection}
-                    disabled={selectionLoadingMore}
+                    disabled={isLoadingMore}
                     style={{ margin: 0 }}
                   >
-                    {selectionLoadingMore ? 'Loading…' : 'Load More'}
+                    {isLoadingMore ? 'Loading…' : 'Load More'}
                   </button>
                 </div>
               )}
@@ -260,7 +360,10 @@ export function Comparison() {
           <div className="compare-selection__popover">
             <button
               className="compare-selection__cancel"
-              onClick={() => setSelectionMode(null)}
+              onClick={() => {
+                clearComparison();
+                setSelectionMode(null);
+              }}
             >
               ← Cancel
             </button>
