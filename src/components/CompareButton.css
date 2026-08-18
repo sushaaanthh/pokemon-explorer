@@ -1,5 +1,5 @@
 /* ===================================================
-   COMPARE BUTTON
+   COMPARE BUTTON — HUD Edition
    =================================================== */
 
 .compare-btn {
@@ -7,26 +7,41 @@
   align-items: center;
   gap: var(--space-1);
   padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-pill);
+  border-radius: var(--hud-corner);
   font-size: var(--fs-xs);
   font-weight: var(--fw-medium);
   color: var(--color-text-tertiary);
   background: var(--color-surface-secondary);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--hud-border-subtle);
   transition: color var(--transition-fast),
               background var(--transition-fast),
-              border-color var(--transition-fast);
+              border-color var(--transition-fast),
+              box-shadow var(--transition-fast),
+              transform var(--transition-fast);
+  clip-path: polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px);
 }
 
 .compare-btn:hover:not(:disabled) {
   color: var(--color-text-primary);
-  border-color: var(--color-border-hover);
+  border-color: var(--hud-border);
+  box-shadow: 0 0 10px var(--hud-glow);
+  transform: translateY(-1px);
+}
+
+.compare-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus), 0 0 10px var(--hud-glow);
+}
+
+.compare-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.96);
 }
 
 .compare-btn--active {
   color: var(--color-accent);
   border-color: var(--color-accent);
   background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  box-shadow: 0 0 12px var(--hud-glow-strong);
 }
 
 .compare-btn:disabled {

@@ -1,5 +1,5 @@
 /* ===================================================
-   FAVORITE BUTTON
+   FAVORITE BUTTON — HUD Edition
    =================================================== */
 
 .fav-btn {
@@ -8,22 +8,36 @@
   justify-content: center;
   width: 34px;
   height: 34px;
-  border-radius: var(--radius-pill);
+  border-radius: var(--hud-corner);
   color: var(--color-text-tertiary);
   background: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(4px);
+  border: 1px solid var(--hud-border-subtle);
   transition: color var(--transition-fast),
               transform var(--transition-spring),
-              background var(--transition-fast);
+              background var(--transition-fast),
+              border-color var(--transition-fast),
+              box-shadow var(--transition-fast);
+  clip-path: polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px);
 }
 
 .fav-btn:hover {
   color: var(--color-accent);
   background: rgba(0, 0, 0, 0.3);
+  border-color: var(--hud-border);
+  box-shadow: 0 0 12px var(--hud-glow);
+  transform: scale(1.1);
+}
+
+.fav-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus), 0 0 12px var(--hud-glow);
 }
 
 .fav-btn--active {
   color: var(--color-accent);
+  border-color: var(--hud-border);
+  box-shadow: 0 0 12px var(--hud-glow);
 }
 
 .fav-btn:active {

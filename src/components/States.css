@@ -1,1 +1,102 @@
-.state{padding:80px 24px;text-align:center;border:1px dashed var(--color-border);border-radius:20px;color:var(--color-text-secondary)}.state span{font:3rem var(--font-display);color:var(--color-accent)}.state h2{margin:12px 0 8px;font-family:var(--font-display);color:var(--color-text-primary);text-transform:uppercase}.state__action{display:inline-block;margin-top:24px;padding:10px 18px;border-radius:999px;background:var(--color-accent);color:#fff;font-weight:700;border:none;cursor:pointer;font-family:inherit;font-size:inherit;text-decoration:none;transition:background var(--transition-fast, 0.2s)}.state__action:hover{background:var(--color-accent-hover, var(--color-accent))}.card-skeleton{height:330px}
+/* ===================================================
+   STATES — HUD Edition
+   =================================================== */
+
+.state {
+  padding: 80px 24px;
+  text-align: center;
+  border: 1px dashed var(--hud-border);
+  border-radius: var(--hud-corner);
+  color: var(--color-text-secondary);
+  position: relative;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-surface) 92%, transparent), var(--color-surface));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+}
+
+.state::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  border-left: 1px solid var(--hud-border);
+  border-bottom: 1px solid var(--hud-border);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.state::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  border-right: 1px solid var(--hud-border);
+  border-top: 1px solid var(--hud-border);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.state span {
+  font: 3rem var(--font-display);
+  color: var(--color-accent);
+  display: inline-block;
+  text-shadow: 0 0 16px var(--hud-glow-strong);
+}
+
+.state h2 {
+  margin: 12px 0 8px;
+  font-family: var(--font-display);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+}
+
+.state p {
+  color: var(--color-text-secondary);
+  max-width: 420px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.state__action {
+  display: inline-block;
+  margin-top: 24px;
+  padding: 10px 18px;
+  border-radius: var(--hud-corner);
+  background: var(--color-accent);
+  color: #fff;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  text-decoration: none;
+  transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
+  position: relative;
+  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+  box-shadow: 0 0 12px var(--hud-glow);
+}
+
+.state__action:hover {
+  background: var(--color-accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 0 24px var(--hud-glow-strong);
+  filter: brightness(1.05);
+}
+
+.state__action:active {
+  transform: translateY(0) scale(0.97);
+  filter: brightness(0.95);
+}
+
+.state__action:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus), 0 0 20px var(--hud-glow-strong);
+}
+
+.card-skeleton {
+  height: 330px;
+}

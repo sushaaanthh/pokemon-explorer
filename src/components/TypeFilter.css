@@ -1,5 +1,5 @@
 /* ===================================================
-   TYPE FILTER
+   TYPE FILTER — HUD Edition
    =================================================== */
 
 .type-filter {
@@ -9,6 +9,7 @@
   padding-bottom: var(--space-2);
   scrollbar-width: none;
   -ms-overflow-style: none;
+  padding-top: 8px;
 }
 
 .type-filter::-webkit-scrollbar {
@@ -18,28 +19,53 @@
 .type-filter__btn {
   flex-shrink: 0;
   padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-pill);
+  border-radius: var(--hud-corner);
   font-size: var(--fs-sm);
   font-weight: var(--fw-medium);
   color: var(--color-text-secondary);
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--hud-border-subtle);
   white-space: nowrap;
   transition: background var(--transition-fast),
               color var(--transition-fast),
               border-color var(--transition-fast),
-              transform var(--transition-fast);
+              transform var(--transition-fast),
+              box-shadow var(--transition-fast);
+  position: relative;
+  clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
+}
+
+.type-filter__btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 4px;
+  height: 4px;
+  border-left: 1px solid var(--hud-border);
+  border-bottom: 1px solid var(--hud-border);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.type-filter__btn:hover::before,
+.type-filter__btn--active::before {
+  opacity: 1;
 }
 
 .type-filter__btn:hover {
   color: var(--color-text-primary);
   border-color: var(--type-color, var(--color-border-hover));
   background: var(--color-surface-secondary);
+  box-shadow: 0 0 10px var(--hud-glow);
+  transform: translateY(-1px);
 }
 
 .type-filter__btn--active {
   color: #fff;
   font-weight: var(--fw-semibold);
+  border-color: var(--type-color, var(--color-accent));
+  box-shadow: 0 0 14px var(--hud-glow-strong), inset 0 0 8px rgba(230,57,70,0.08);
 }
 
 .type-filter__btn--active:first-child {
@@ -49,5 +75,5 @@
 }
 
 .type-filter__btn:active {
-  transform: scale(0.96);
+  transform: scale(0.95);
 }

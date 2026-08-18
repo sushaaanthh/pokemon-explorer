@@ -1,5 +1,5 @@
 /* ===================================================
-   SORT SELECT
+   SORT SELECT — HUD Edition
    =================================================== */
 
 .sort-select {
@@ -13,6 +13,19 @@
   font-weight: var(--fw-medium);
   color: var(--color-text-secondary);
   white-space: nowrap;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sort-select__label::after {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  background: var(--color-accent);
+  margin-left: 6px;
+  box-shadow: 0 0 4px var(--hud-glow-strong);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
 }
 
 .sort-select__wrapper {
@@ -25,25 +38,29 @@
   appearance: none;
   -webkit-appearance: none;
   padding: var(--space-2) var(--space-8) var(--space-2) var(--space-4);
-  border-radius: var(--radius-pill);
+  border-radius: var(--hud-corner);
   font-size: var(--fs-sm);
   font-weight: var(--fw-medium);
   color: var(--color-text-primary);
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--hud-border-subtle);
   cursor: pointer;
   transition: border-color var(--transition-fast),
-              background var(--transition-fast);
+              background var(--transition-fast),
+              box-shadow var(--transition-fast);
+  clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
 }
 
 .sort-select__input:hover {
-  border-color: var(--color-border-hover);
+  border-color: var(--hud-border);
   background: var(--color-surface-secondary);
+  box-shadow: 0 0 10px var(--hud-glow);
 }
 
 .sort-select__input:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-focus), 0 0 12px var(--hud-glow);
 }
 
 .sort-select__chevron {
