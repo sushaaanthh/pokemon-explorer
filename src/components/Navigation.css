@@ -26,9 +26,12 @@
 }
 
 .nav__brand-icon {
-  color: var(--color-accent);
-  font-size: 0.9rem;
-  transform: translateY(-1px);
+  height: 19px;
+  width: auto;
+  max-width: 19px;
+  object-fit: contain;
+  display: block;
+  vertical-align: middle;
 }
 
 .nav__links {

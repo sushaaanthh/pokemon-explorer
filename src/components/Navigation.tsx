@@ -1,3 +1,4 @@
+import logo from '../assets/branding/logo.png';
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { VaultLink } from './VaultLink';
@@ -25,7 +26,7 @@ export function Navigation({ theme, onToggleTheme }: NavigationProps) {
     <nav className="nav" role="navigation" aria-label="Main navigation">
       <div className="nav__inner container">
         <VaultLink to="/" className="nav__brand" aria-label="Pokémon Explorer Home">
-          <span className="nav__brand-icon">◆</span>
+          <img className="nav__brand-icon" src={logo} alt="" width="32" height="32" />
           <span className="nav__brand-text">Pokémon Explorer</span>
         </VaultLink>
 

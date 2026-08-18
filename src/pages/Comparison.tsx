@@ -129,6 +129,8 @@ export function Comparison() {
   const preloadSelection = useCallback(() => {
     setSearchQuery('');
     setSelectionSearchResults([]);
+    setTypeLoadMoreError(false);
+    setSelectionLoadMoreError(false);
     // Preload the first page if not yet loaded
     if (selectionPokemon.length === 0 && !selectionLoading) {
       setSelectionLoading(true);
@@ -178,7 +180,7 @@ export function Comparison() {
         setTypePokemonDetailed(prev => [...prev, ...detailResponses]);
         setTypeOffset(prev => prev + SELECTION_PAGE_SIZE);
         setTypeHasMore(typeNames.length > typeOffset + SELECTION_PAGE_SIZE);
-      } catch (e) {
+      } catch {
         setTypeLoadMoreError(true);
       } finally {
         setTypeLoadingMore(false);
@@ -197,7 +199,7 @@ export function Comparison() {
       setSelectionPokemon(prev => [...prev, ...detailResponses]);
       setSelectionOffset(prev => prev + SELECTION_PAGE_SIZE);
       setSelectionHasMore(!!listResponse.next);
-    } catch (e) {
+    } catch {
       setSelectionLoadMoreError(true);
     } finally {
       setSelectionLoadingMore(false);
