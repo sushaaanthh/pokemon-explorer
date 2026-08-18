@@ -11,14 +11,7 @@ import { getPokemonList, getPokemonDetailsBatch, getPokemon, getPokemonNamesByTy
 import pokeballImage from '../assets/branding/pokeball.png';
 import './pages.css';
 
-interface Props {
-  favorites: string[];
-  comparison: string[];
-  onToggleFavorite: (name: string) => void;
-  onToggleComparison: (name: string) => void;
-}
-
-export function Home(props: Props) {
+export function Home() {
   const [mode, setMode] = useState<'all' | 'search' | 'type'>('all');
 
   // 'all' mode state
@@ -349,7 +342,7 @@ export function Home(props: Props) {
           )}
           
           {!isLoading && !error && displayedPokemon.length > 0 && (
-            <PokemonGrid pokemon={displayedPokemon} {...props} />
+            <PokemonGrid pokemon={displayedPokemon} />
           )}
         </div>
 

@@ -6,6 +6,9 @@ import { getTypeColor } from '../utils/pokemonTypeColors';
 import { formatPokemonId } from '../utils/formatPokemonId';
 import { formatPokemonName } from '../utils/formatPokemonName';
 import { ErrorState } from '../components/ErrorState';
+import { FavoriteButton } from '../components/FavoriteButton';
+import { CompareButton } from '../components/CompareButton';
+import { useAppState } from '../context/AppStateContext';
 import './pages.css';
 import './PokemonDetails.css';
 
@@ -17,6 +20,7 @@ export function PokemonDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [showAllMoves, setShowAllMoves] = useState(false);
+  const { isFavorite, toggleFavorite, isCompareSelected, toggleComparison } = useAppState();
 
   const fetchPokemon = useCallback(async () => {
     if (!identifier) {
@@ -162,7 +166,10 @@ export function PokemonDetails() {
         {/* Right: Info Panel */}
         <section className="detail-info">
           <p className="detail-eyebrow">Pokédex Entry</p>
-          <h1 className="detail-name">{formatPokemonName(pokemon.name)}</h1>
+          <div className="detail-title-row">
+            <h1 className="detail-name">{formatPokemonName(pokemon.name)}</h1>
+            <FavoriteButton isFavorite={isFavorite(pokemon.id)} onToggle={() => toggleFavorite(pokemon.id)} size={24} />
+          </div>
 
           <div className="detail-types">
             {pokemon.types.map((t) => (
@@ -174,6 +181,16 @@ export function PokemonDetails() {
                 {formatPokemonName(t.type.name)}
               </span>
             ))}
+          </div>
+
+          <div className="detail-actions">
+            <div className="detail-actions-row">
+              <CompareButton
+                isSelected={isCompareSelected(pokemon.id)}
+                disabled={false}
+                onToggle={() => toggleComparison(pokemon.id)}
+              />
+            </div>
           </div>
 
           <div className="detail-meta-grid">

@@ -5,15 +5,11 @@ import { formatPokemonId } from '../utils/formatPokemonId';
 import { formatPokemonName } from '../utils/formatPokemonName';
 import { FavoriteButton } from './FavoriteButton';
 import { CompareButton } from './CompareButton';
+import { useAppState } from '../context/AppStateContext';
 import './PokemonCard.css';
 
 interface PokemonCardProps {
   pokemon: Pokemon;
-  isFavorite: boolean;
-  onToggleFavorite: () => void;
-  isCompareSelected: boolean;
-  compareDisabled: boolean;
-  onToggleCompare: () => void;
 }
 
 function getArtwork(pokemon: Pokemon): string {
@@ -24,18 +20,16 @@ function getArtwork(pokemon: Pokemon): string {
   );
 }
 
-export function PokemonCard({
-  pokemon,
-  isFavorite,
-  onToggleFavorite,
-  isCompareSelected,
-  compareDisabled,
-  onToggleCompare,
-}: PokemonCardProps) {
+export function PokemonCard({ pokemon }: PokemonCardProps) {
+  const { isFavorite, toggleFavorite, isCompareSelected, toggleComparison } = useAppState();
   const primaryType = pokemon.types[0]?.type.name ?? 'normal';
   const typeColor = getTypeColor(primaryType);
   const artwork = getArtwork(pokemon);
   const hpStat = pokemon.stats.find(s => s.stat.name === 'hp');
+
+  const favorite = isFavorite(pokemon.id);
+  const compareSelected = isCompareSelected(pokemon.id);
+  const compareDisabled = false; // Always clickable so the "full" notice can display
 
   return (
     <Link
@@ -49,7 +43,7 @@ export function PokemonCard({
       {/* Top bar */}
       <div className="pokemon-card__top">
         <span className="pokemon-card__id">{formatPokemonId(pokemon.id)}</span>
-        <FavoriteButton isFavorite={isFavorite} onToggle={onToggleFavorite} />
+        <FavoriteButton isFavorite={favorite} onToggle={() => toggleFavorite(pokemon.id)} />
       </div>
 
       {/* Artwork */}
@@ -89,9 +83,9 @@ export function PokemonCard({
           </span>
         )}
         <CompareButton
-          isSelected={isCompareSelected}
+          isSelected={compareSelected}
           disabled={compareDisabled}
-          onToggle={onToggleCompare}
+          onToggle={() => toggleComparison(pokemon.id)}
         />
       </div>
     </Link>

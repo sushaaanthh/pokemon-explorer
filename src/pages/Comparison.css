@@ -137,6 +137,29 @@
   margin-bottom: 12px;
 }
 
+.compare-remove {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-secondary);
+  color: var(--color-text-secondary);
+  z-index: 3;
+  transition: color var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast), transform var(--transition-spring);
+}
+
+.compare-remove:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  transform: scale(1.1);
+}
+
 .compare-type-badge {
   padding: 4px 12px;
   border-radius: 999px;

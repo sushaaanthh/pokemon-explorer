@@ -6,12 +6,14 @@ import { formatPokemonName } from '../utils/formatPokemonName';
 import { getPokemon } from '../services/pokemonApi';
 import { EmptyState } from '../components/EmptyState';
 import { ErrorState } from '../components/ErrorState';
+import { useAppState } from '../context/AppStateContext';
 import './pages.css';
 import './Comparison.css';
 
 const COMPARE_STATS = ['hp', 'attack', 'defense', 'special-attack', 'special-defense', 'speed'];
 
-export function Comparison({ comparison }: { comparison: string[] }) {
+export function Comparison() {
+  const { comparison, removeFromComparison } = useAppState();
   const [pokemonList, setPokemonList] = useState<(Pokemon | null)[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -30,7 +32,7 @@ export function Comparison({ comparison }: { comparison: string[] }) {
       setIsLoading(true);
       setError(false);
       try {
-        const promises = comparison.map(name => getPokemon(name));
+        const promises = comparison.map(id => getPokemon(id));
         const results = await Promise.all(promises);
         if (!active) return;
 
@@ -119,6 +121,17 @@ export function Comparison({ comparison }: { comparison: string[] }) {
           <article className="compare-panel" style={{ '--card-type-color': leftColor } as React.CSSProperties}>
             <span className="compare-glow" aria-hidden="true" />
             <span className="compare-id">{formatPokemonId(leftPokemon.id)}</span>
+            <button
+              className="compare-remove"
+              onClick={() => removeFromComparison(leftPokemon.id)}
+              aria-label={`Remove ${formatPokemonName(leftPokemon.name)} from comparison`}
+              title="Remove from comparison"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
             <div className="compare-image-container">
               <img
                 className="compare-image"
@@ -157,6 +170,17 @@ export function Comparison({ comparison }: { comparison: string[] }) {
           <article className="compare-panel" style={{ '--card-type-color': rightColor } as React.CSSProperties}>
             <span className="compare-glow" aria-hidden="true" />
             <span className="compare-id">{formatPokemonId(rightPokemon.id)}</span>
+            <button
+              className="compare-remove"
+              onClick={() => removeFromComparison(rightPokemon.id)}
+              aria-label={`Remove ${formatPokemonName(rightPokemon.name)} from comparison`}
+              title="Remove from comparison"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
             <div className="compare-image-container">
               <img
                 className="compare-image"

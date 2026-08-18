@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { VaultLink } from './VaultLink';
 import { ThemeToggle } from './ThemeToggle';
+import { useAppState } from '../context/AppStateContext';
 import './Navigation.css';
 
 interface NavigationProps {
   theme: 'dark' | 'light';
   onToggleTheme: () => void;
-  favoritesCount: number;
 }
 
 const NAV_LINKS = [
@@ -16,9 +16,18 @@ const NAV_LINKS = [
   { to: '/compare', label: 'Compare' },
 ];
 
-export function Navigation({ theme, onToggleTheme, favoritesCount }: NavigationProps) {
+export function Navigation({ theme, onToggleTheme }: NavigationProps) {
   const location = useLocation();
+  const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { favoritesCount, comparisonCount } = useAppState();
+
+  const handleCompareClick = () => {
+    if (comparisonCount === 2) {
+      navigate('/compare');
+    }
+    setMobileOpen(false);
+  };
 
   return (
     <nav className="nav" role="navigation" aria-label="Main navigation">
@@ -40,6 +49,9 @@ export function Navigation({ theme, onToggleTheme, favoritesCount }: NavigationP
               {link.to === '/favorites' && favoritesCount > 0 && (
                 <span className="nav__badge">{favoritesCount}</span>
               )}
+              {link.to === '/compare' && comparisonCount > 0 && (
+                <span className="nav__badge nav__badge--compare">{comparisonCount}</span>
+              )}
             </VaultLink>
           ))}
         </div>
@@ -55,6 +67,34 @@ export function Navigation({ theme, onToggleTheme, favoritesCount }: NavigationP
               <span className="nav__fav-count">{favoritesCount}</span>
             )}
           </VaultLink>
+
+          {comparisonCount > 0 && (
+            <button
+              className={`nav__compare ${comparisonCount === 2 ? 'nav__compare--ready' : ''}`}
+              onClick={handleCompareClick}
+              disabled={comparisonCount !== 2}
+              aria-label={
+                comparisonCount === 2
+                  ? 'Compare selected Pokémon'
+                  : '1 Pokémon selected for comparison. Select one more.'
+              }
+              aria-pressed={comparisonCount === 2}
+              title={
+                comparisonCount === 2
+                  ? 'Compare now'
+                  : 'Select one more Pokémon to compare'
+              }
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="16 3 21 3 21 8" />
+                <line x1="4" y1="20" x2="21" y2="3" />
+                <polyline points="21 16 21 21 16 21" />
+                <line x1="15" y1="15" x2="21" y2="21" />
+                <line x1="4" y1="4" x2="9" y2="9" />
+              </svg>
+              <span>Compare {comparisonCount}</span>
+            </button>
+          )}
 
           <button
             className={`nav__hamburger ${mobileOpen ? 'nav__hamburger--open' : ''}`}
