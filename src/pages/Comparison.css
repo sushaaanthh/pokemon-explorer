@@ -329,10 +329,28 @@
   margin-top: 40px;
 }
 
-.compare-selection__footer {
+.compare-selection__popover {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
-  justify-content: center;
-  margin-top: 48px;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  border-radius: 999px;
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  z-index: 1000;
+}
+
+@media (max-width: 640px) {
+  .compare-selection__popover {
+    bottom: 20px;
+    padding: 10px 20px;
+    gap: 8px;
+  }
 }
 
 .compare-selection__cancel {

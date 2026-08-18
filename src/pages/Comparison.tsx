@@ -25,8 +25,8 @@ export function Comparison() {
   const [error, setError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
 
-  // In-page selection state
-  const [selectionSlot, setSelectionSlot] = useState<0 | 1 | null>(null);
+  // In-page selection state: 'free' for explore mode, 0|1 for slot replacement
+  const [selectionMode, setSelectionMode] = useState<'free' | 0 | 1 | null>(null);
   const [selectionPokemon, setSelectionPokemon] = useState<Pokemon[]>([]);
   const [selectionOffset, setSelectionOffset] = useState(0);
   const [selectionHasMore, setSelectionHasMore] = useState(true);
@@ -77,9 +77,8 @@ export function Comparison() {
     };
   }, [comparison, retryCount]);
 
-  // Open the selection interface for a slot
-  const openSelection = useCallback((slot: 0 | 1) => {
-    setSelectionSlot(slot);
+  // Shared preload logic for the selection interface
+  const preloadSelection = useCallback(() => {
     setSearchQuery('');
     setSelectionSearchResults([]);
     // Preload the first page if not yet loaded
@@ -104,6 +103,18 @@ export function Comparison() {
         });
     }
   }, [selectionPokemon.length, selectionLoading]);
+
+  // Open the selection interface for a specific slot (replace flow)
+  const openSelection = useCallback((slot: 0 | 1) => {
+    setSelectionMode(slot);
+    preloadSelection();
+  }, [preloadSelection]);
+
+  // Open the selection interface in free-selection mode (explore flow)
+  const openFreeSelection = useCallback(() => {
+    setSelectionMode('free');
+    preloadSelection();
+  }, [preloadSelection]);
 
   // Load more selection pokemon
   const loadMoreSelection = useCallback(async () => {
@@ -148,12 +159,12 @@ export function Comparison() {
     }
   }, []);
 
-  // Select a pokemon for the active slot
+  // Select a pokemon for the active slot (slot-replacement mode only)
   const handleSelectPokemon = useCallback((id: number) => {
-    if (selectionSlot === null) return;
-    setComparisonSlot(selectionSlot, id);
-    setSelectionSlot(null);
-  }, [selectionSlot, setComparisonSlot]);
+    if (selectionMode === null || selectionMode === 'free') return;
+    setComparisonSlot(selectionMode, id);
+    setSelectionMode(null);
+  }, [selectionMode, setComparisonSlot]);
 
   // Remove a pokemon from comparison by slot
   const handleRemoveSlot = useCallback((slotIndex: 0 | 1) => {
@@ -180,12 +191,16 @@ export function Comparison() {
   }, [baseSelection, selectedType]);
 
   // -------- Selection interface view --------
-  if (selectionSlot !== null) {
-    const slotLabel = selectionSlot === 0 ? 'Pokémon A' : 'Pokémon B';
+  if (selectionMode !== null) {
+    const isFreeMode = selectionMode === 'free';
+    const slotLabel = isFreeMode
+      ? null
+      : selectionMode === 0 ? 'Pokémon A' : 'Pokémon B';
+    const eyebrow = isFreeMode ? 'Explore Pokémon' : `Choose ${slotLabel}`;
 
     return (
       <main className="compare-page">
-        <p className="compare-eyebrow">Choose {slotLabel}</p>
+        <p className="compare-eyebrow">{eyebrow}</p>
         <h1 className="compare-title">Select Pokémon</h1>
 
         <div className="compare-selection">
@@ -201,7 +216,12 @@ export function Comparison() {
 
           {!selectionLoading && selectionError && displayedSelection.length === 0 && (
             <div className="compare-selection__state">
-              <ErrorState onRetry={() => openSelection(selectionSlot)} />
+              <ErrorState
+                onRetry={() => {
+                  if (selectionMode === 'free') openFreeSelection();
+                  else if (selectionMode !== null) openSelection(selectionMode);
+                }}
+              />
             </div>
           )}
 
@@ -219,7 +239,7 @@ export function Comparison() {
             <>
               <PokemonGrid
                 pokemon={displayedSelection}
-                onSelect={handleSelectPokemon}
+                onSelect={isFreeMode ? undefined : handleSelectPokemon}
                 linkState={{ from: '/compare' }}
               />
               {!searchQuery && !selectedType && selectionHasMore && (
@@ -237,13 +257,21 @@ export function Comparison() {
             </>
           )}
 
-          <div className="compare-selection__footer">
+          <div className="compare-selection__popover">
             <button
               className="compare-selection__cancel"
-              onClick={() => setSelectionSlot(null)}
+              onClick={() => setSelectionMode(null)}
             >
               ← Cancel
             </button>
+            {isFreeMode && comparison.length === 2 && (
+              <button
+                className="state__action"
+                onClick={() => setSelectionMode(null)}
+              >
+                COMPARE
+              </button>
+            )}
           </div>
         </div>
       </main>
@@ -293,7 +321,7 @@ export function Comparison() {
             title="Comparison stage is empty."
             text="Choose two Pokémon to see their stats side-by-side."
             action={true}
-            onAction={() => openSelection(0)}
+            onAction={() => openFreeSelection()}
           />
         </div>
       </main>
@@ -514,10 +542,7 @@ export function Comparison() {
           <h2 className="compare-section-heading" style={{ fontSize: '1.6rem', marginBottom: '16px' }}>Select another Pokémon</h2>
           <button
             className="state__action"
-            onClick={() => {
-              const nextSlot = leftPokemon ? 1 : 0;
-              openSelection(nextSlot as 0 | 1);
-            }}
+               onClick={() => openFreeSelection()}
             style={{ margin: 0 }}
           >
             Choose Pokémon
