@@ -1,25 +1,126 @@
-import { useParams } from 'react-router-dom';
-import { MOCK_POKEMON } from '../mock/pokemonMockData';
+import { useParams, Link } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
+import type { Pokemon } from '../types/pokemon';
+import { getPokemon } from '../services/pokemonApi';
 import { getTypeColor } from '../utils/pokemonTypeColors';
 import { formatPokemonId } from '../utils/formatPokemonId';
 import { formatPokemonName } from '../utils/formatPokemonName';
-import { EmptyState } from '../components/EmptyState';
+import { ErrorState } from '../components/ErrorState';
 import './pages.css';
 import './PokemonDetails.css';
 
-export function PokemonDetails() {
-  const { name } = useParams();
-  const pokemon = MOCK_POKEMON.find((item) => item.name === name);
+const INITIAL_MOVES_COUNT = 12;
 
-  if (!pokemon) {
+export function PokemonDetails() {
+  const { name: identifier } = useParams();
+  const [pokemon, setPokemon] = useState<Pokemon | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [showAllMoves, setShowAllMoves] = useState(false);
+
+  const fetchPokemon = useCallback(async () => {
+    if (!identifier) {
+      setLoading(false);
+      setError(true);
+      return;
+    }
+    setLoading(true);
+    setError(false);
+    setPokemon(null);
+    try {
+      const param = /^\d+$/.test(identifier) ? Number(identifier) : identifier.toLowerCase();
+      const result = await getPokemon(param);
+      setPokemon(result);
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, [identifier]);
+
+  useEffect(() => {
+    fetchPokemon();
+    window.scrollTo(0, 0);
+  }, [fetchPokemon]);
+
+  // Dynamic document title
+  useEffect(() => {
+    if (pokemon) {
+      document.title = `Pokémon Explorer — ${formatPokemonName(pokemon.name)}`;
+    } else {
+      document.title = 'Pokémon Explorer';
+    }
+    return () => {
+      document.title = 'Pokémon Explorer';
+    };
+  }, [pokemon]);
+
+  // Loading skeleton
+  if (loading) {
     return (
-      <main className="page subpage">
-        <EmptyState />
+      <main className="detail-page">
+        <Link to="/" className="detail-back">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+          Back to Dex
+        </Link>
+        <div className="detail-layout">
+          <section className="detail-artwork-panel detail-skeleton-artwork skeleton" />
+          <section className="detail-info">
+            <div className="detail-skeleton-eyebrow skeleton" />
+            <div className="detail-skeleton-name skeleton" />
+            <div className="detail-skeleton-types">
+              <div className="detail-skeleton-badge skeleton" />
+              <div className="detail-skeleton-badge skeleton" />
+            </div>
+            <div className="detail-meta-grid">
+              <div className="detail-meta-card skeleton detail-skeleton-meta" />
+              <div className="detail-meta-card skeleton detail-skeleton-meta" />
+              <div className="detail-meta-card skeleton detail-skeleton-meta" />
+            </div>
+            <div className="detail-stats">
+              <div className="detail-skeleton-section-title skeleton" />
+              {Array.from({ length: 6 }, (_, i) => (
+                <div className="stat-row" key={i}>
+                  <div className="detail-skeleton-stat-label skeleton" />
+                  <div className="stat-bar-container skeleton" />
+                  <div className="detail-skeleton-stat-value skeleton" />
+                </div>
+              ))}
+            </div>
+            <div className="detail-moves">
+              <div className="detail-skeleton-section-title skeleton" />
+              <div className="detail-moves-grid">
+                {Array.from({ length: 8 }, (_, i) => (
+                  <div className="detail-skeleton-chip skeleton" key={i} />
+                ))}
+              </div>
+            </div>
+          </section>
+        </div>
       </main>
     );
   }
 
-  const primaryType = pokemon.types[0].type.name;
+  // Error or not found
+  if (error || !pokemon) {
+    return (
+      <main className="detail-page">
+        <Link to="/" className="detail-back">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+          Back to Dex
+        </Link>
+        <div className="detail-error-wrap">
+          <ErrorState onRetry={fetchPokemon} />
+        </div>
+      </main>
+    );
+  }
+
+  const primaryType = pokemon.types[0]?.type.name ?? 'normal';
   const primaryColor = getTypeColor(primaryType);
 
   const artworkUrl =
@@ -27,10 +128,24 @@ export function PokemonDetails() {
     pokemon.sprites.front_default ??
     '';
 
+  const heightMeters = (pokemon.height / 10).toFixed(1);
+  const weightKg = (pokemon.weight / 10).toFixed(1);
+
+  const visibleMoves = showAllMoves
+    ? pokemon.moves
+    : pokemon.moves.slice(0, INITIAL_MOVES_COUNT);
+  const remainingMoves = pokemon.moves.length - INITIAL_MOVES_COUNT;
+
   return (
     <main className="detail-page" style={{ '--card-type-color': primaryColor } as React.CSSProperties}>
+      <Link to="/" className="detail-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+        Back to Dex
+      </Link>
+
       <div className="detail-layout">
-        
         {/* Left: Artwork Panel */}
         <section className="detail-artwork-panel">
           <span className="detail-artwork-glow" aria-hidden="true" />
@@ -48,7 +163,7 @@ export function PokemonDetails() {
         <section className="detail-info">
           <p className="detail-eyebrow">Pokédex Entry</p>
           <h1 className="detail-name">{formatPokemonName(pokemon.name)}</h1>
-          
+
           <div className="detail-types">
             {pokemon.types.map((t) => (
               <span
@@ -64,34 +179,39 @@ export function PokemonDetails() {
           <div className="detail-meta-grid">
             <div className="detail-meta-card">
               <span className="detail-meta-label">Height</span>
-              <span className="detail-meta-value">{(pokemon.height / 10).toFixed(1)} m</span>
+              <span className="detail-meta-value">{heightMeters} m</span>
             </div>
             <div className="detail-meta-card">
               <span className="detail-meta-label">Weight</span>
-              <span className="detail-meta-value">{(pokemon.weight / 10).toFixed(1)} kg</span>
+              <span className="detail-meta-value">{weightKg} kg</span>
             </div>
             <div className="detail-meta-card">
               <span className="detail-meta-label">Abilities</span>
-              <span className="detail-meta-value">
-                {pokemon.abilities
-                  .map((a) => formatPokemonName(a.ability.name) + (a.is_hidden ? ' · Hidden' : ''))
-                  .join(', ')}
+              <span className="detail-meta-value detail-abilities-value">
+                {pokemon.abilities.map((a, i) => (
+                  <span key={a.ability.name} className="detail-ability-item">
+                    {formatPokemonName(a.ability.name)}
+                    {a.is_hidden && <span className="detail-hidden-badge">Hidden</span>}
+                    {i < pokemon.abilities.length - 1 && ', '}
+                  </span>
+                ))}
               </span>
             </div>
           </div>
 
+          {/* Base Stats */}
           <div className="detail-stats">
             <p className="detail-section-title">Base Stats</p>
             {pokemon.stats.map((s) => {
               const maxStat = 255;
               const percentage = Math.min((s.base_stat / maxStat) * 100, 100);
-              
+
               return (
                 <div className="stat-row" key={s.stat.name}>
                   <span className="stat-name">{formatPokemonName(s.stat.name)}</span>
-                  <div className="stat-bar-container">
-                    <div 
-                      className="stat-bar-fill" 
+                  <div className="stat-bar-container" role="progressbar" aria-valuenow={s.base_stat} aria-valuemin={0} aria-valuemax={maxStat} aria-label={`${formatPokemonName(s.stat.name)}: ${s.base_stat}`}>
+                    <div
+                      className="stat-bar-fill"
                       style={{ width: `${percentage}%` }}
                     />
                   </div>
@@ -101,17 +221,36 @@ export function PokemonDetails() {
             })}
           </div>
 
+          {/* Moves */}
           <div className="detail-moves">
-            <p className="detail-section-title">Moves</p>
+            <p className="detail-section-title">
+              Moves
+              <span className="detail-moves-count">{pokemon.moves.length}</span>
+            </p>
             <div className="detail-moves-grid">
-              {pokemon.moves.slice(0, 12).map((m) => (
+              {visibleMoves.map((m) => (
                 <span className="move-chip" key={m.move.name}>
                   {formatPokemonName(m.move.name)}
                 </span>
               ))}
             </div>
+            {!showAllMoves && remainingMoves > 0 && (
+              <button
+                className="detail-moves-expand"
+                onClick={() => setShowAllMoves(true)}
+              >
+                +{remainingMoves} more
+              </button>
+            )}
+            {showAllMoves && pokemon.moves.length > INITIAL_MOVES_COUNT && (
+              <button
+                className="detail-moves-expand"
+                onClick={() => setShowAllMoves(false)}
+              >
+                Show less
+              </button>
+            )}
           </div>
-          
         </section>
       </div>
     </main>

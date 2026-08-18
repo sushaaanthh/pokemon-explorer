@@ -1,3 +1,7 @@
+/* ===================================================
+   DETAIL PAGE — Pokémon Explorer
+   =================================================== */
+
 .detail-page {
   max-width: 1400px;
   margin: 0 auto;
@@ -16,6 +20,25 @@
   }
 }
 
+/* ---- Back to Dex ---- */
+.detail-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-secondary);
+  font-size: 0.82rem;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: color var(--transition-fast);
+  margin-bottom: 8px;
+}
+
+.detail-back:hover {
+  color: var(--color-accent);
+}
+
+/* ---- Layout ---- */
 .detail-layout {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -30,11 +53,12 @@
   }
 }
 
+/* ---- Artwork Panel ---- */
 .detail-artwork-panel {
   position: relative;
   background-color: var(--color-surface);
   border-radius: var(--radius-2xl);
-  border: 1px solid rgba(255,255,255,0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   min-height: 500px;
   display: grid;
   place-items: center;
@@ -74,11 +98,37 @@
   max-height: 400px;
   object-fit: contain;
   filter: drop-shadow(0 18px 32px rgba(0, 0, 0, 0.28));
+  animation: detail-artwork-enter 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
+@keyframes detail-artwork-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ---- Info Panel ---- */
 .detail-info {
   display: flex;
   flex-direction: column;
+  animation: detail-info-enter 0.5s ease both;
+  animation-delay: 0.15s;
+}
+
+@keyframes detail-info-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .detail-eyebrow {
@@ -99,6 +149,7 @@
   margin-bottom: 24px;
 }
 
+/* ---- Type Badges ---- */
 .detail-types {
   display: flex;
   gap: 12px;
@@ -115,6 +166,7 @@
   letter-spacing: 0.08em;
 }
 
+/* ---- Meta Grid (Height / Weight / Abilities) ---- */
 .detail-meta-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -153,6 +205,32 @@
   text-transform: capitalize;
 }
 
+/* ---- Abilities ---- */
+.detail-abilities-value {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 0;
+}
+
+.detail-ability-item {
+  white-space: nowrap;
+}
+
+.detail-hidden-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  padding: 2px 7px;
+  border-radius: 999px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+/* ---- Section Title ---- */
 .detail-section-title {
   color: var(--color-accent);
   font-size: 0.75rem;
@@ -160,6 +238,9 @@
   letter-spacing: 0.16em;
   text-transform: uppercase;
   margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .detail-section-heading {
@@ -170,6 +251,7 @@
   margin-bottom: 28px;
 }
 
+/* ---- Stats ---- */
 .detail-stats {
   margin-bottom: 56px;
 }
@@ -218,6 +300,22 @@
   text-align: right;
 }
 
+/* ---- Moves ---- */
+.detail-moves-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+  color: var(--color-accent);
+  font-size: 0.7rem;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0;
+}
+
 .detail-moves-grid {
   display: flex;
   flex-wrap: wrap;
@@ -239,4 +337,104 @@
 .move-chip:hover {
   border-color: var(--color-accent);
   color: var(--color-text-primary);
+}
+
+.detail-moves-expand {
+  display: block;
+  margin-top: 18px;
+  padding: 10px 22px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  font-size: 0.82rem;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  transition: border-color var(--transition-fast), color var(--transition-fast);
+  cursor: pointer;
+}
+
+.detail-moves-expand:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+/* ---- Error Wrap ---- */
+.detail-error-wrap {
+  margin-top: 64px;
+}
+
+/* ===================================================
+   SKELETON LOADING STATES
+   =================================================== */
+.detail-skeleton-artwork {
+  min-height: 500px;
+}
+
+.detail-skeleton-eyebrow {
+  width: 110px;
+  height: 14px;
+  margin-bottom: 16px;
+  border-radius: var(--radius-sm);
+}
+
+.detail-skeleton-name {
+  width: 280px;
+  height: 52px;
+  margin-bottom: 28px;
+  border-radius: var(--radius-md);
+}
+
+.detail-skeleton-types {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.detail-skeleton-badge {
+  width: 80px;
+  height: 30px;
+  border-radius: 999px;
+}
+
+.detail-skeleton-meta {
+  min-height: 82px;
+}
+
+.detail-skeleton-section-title {
+  width: 90px;
+  height: 14px;
+  margin-bottom: 20px;
+  border-radius: var(--radius-sm);
+}
+
+.detail-skeleton-stat-label {
+  width: 80px;
+  height: 14px;
+  border-radius: var(--radius-sm);
+}
+
+.detail-skeleton-stat-value {
+  width: 30px;
+  height: 18px;
+  border-radius: var(--radius-sm);
+  margin-left: auto;
+}
+
+.detail-skeleton-chip {
+  width: 100px;
+  height: 36px;
+  border-radius: 999px;
+}
+
+@media (max-width: 640px) {
+  .detail-skeleton-name {
+    width: 200px;
+    height: 40px;
+  }
+
+  .detail-skeleton-artwork {
+    min-height: 350px;
+  }
 }
