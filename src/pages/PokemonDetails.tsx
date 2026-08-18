@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { useState, useEffect, useCallback } from 'react';
 import type { Pokemon } from '../types/pokemon';
 import { getPokemon } from '../services/pokemonApi';
@@ -16,11 +16,17 @@ const INITIAL_MOVES_COUNT = 12;
 
 export function PokemonDetails() {
   const { name: identifier } = useParams();
+  const location = useLocation();
   const [pokemon, setPokemon] = useState<Pokemon | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [showAllMoves, setShowAllMoves] = useState(false);
   const { isFavorite, toggleFavorite, isCompareSelected, toggleComparison } = useAppState();
+
+  // Context-aware back navigation: remember where the user came from.
+  const backFromCompare = (location.state as { from?: string } | null)?.from === '/compare';
+  const backTo = backFromCompare ? '/compare' : '/';
+  const backLabel = backFromCompare ? 'Back to Compare' : 'Back to Dex';
 
   const fetchPokemon = useCallback(async () => {
     if (!identifier) {
@@ -63,11 +69,11 @@ export function PokemonDetails() {
   if (loading) {
     return (
       <main className="detail-page">
-        <Link to="/" className="detail-back">
+        <Link to={backTo} className="detail-back">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6" />
           </svg>
-          Back to Dex
+          {backLabel}
         </Link>
         <div className="detail-layout">
           <section className="detail-artwork-panel detail-skeleton-artwork skeleton" />
@@ -111,11 +117,11 @@ export function PokemonDetails() {
   if (error || !pokemon) {
     return (
       <main className="detail-page">
-        <Link to="/" className="detail-back">
+        <Link to={backTo} className="detail-back">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6" />
           </svg>
-          Back to Dex
+          {backLabel}
         </Link>
         <div className="detail-error-wrap">
           <ErrorState onRetry={fetchPokemon} />
@@ -142,11 +148,11 @@ export function PokemonDetails() {
 
   return (
     <main className="detail-page" style={{ '--card-type-color': primaryColor } as React.CSSProperties}>
-      <Link to="/" className="detail-back">
+      <Link to={backTo} className="detail-back">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="15 18 9 12 15 6" />
         </svg>
-        Back to Dex
+        {backLabel}
       </Link>
 
       <div className="detail-layout">

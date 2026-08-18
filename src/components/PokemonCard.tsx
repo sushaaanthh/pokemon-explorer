@@ -12,6 +12,8 @@ interface PokemonCardProps {
   pokemon: Pokemon;
   /** Optional override for the compare action when rendered inside /compare */
   onSelect?: (id: number) => void;
+  /** Optional router state passed to the navigation Link (e.g. to remember origin) */
+  linkState?: object;
 }
 
 function getArtwork(pokemon: Pokemon): string {
@@ -22,7 +24,7 @@ function getArtwork(pokemon: Pokemon): string {
   );
 }
 
-export function PokemonCard({ pokemon, onSelect }: PokemonCardProps) {
+export function PokemonCard({ pokemon, onSelect, linkState }: PokemonCardProps) {
   const { isFavorite, toggleFavorite, isCompareSelected, toggleComparison } = useAppState();
   const primaryType = pokemon.types[0]?.type.name ?? 'normal';
   const typeColor = getTypeColor(primaryType);
@@ -44,6 +46,7 @@ export function PokemonCard({ pokemon, onSelect }: PokemonCardProps) {
   return (
     <Link
       to={`/pokemon/${pokemon.name}`}
+      state={linkState}
       className="pokemon-card"
       style={{ '--card-type-color': typeColor } as React.CSSProperties}
     >

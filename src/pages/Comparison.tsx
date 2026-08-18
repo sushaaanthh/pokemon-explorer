@@ -1,6 +1,6 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import type { CSSProperties } from 'react';
-import type { Pokemon } from '../types/pokemon';
+import type { Pokemon, PokemonTypeName } from '../types/pokemon';
 import { getTypeColor } from '../utils/pokemonTypeColors';
 import { formatPokemonId } from '../utils/formatPokemonId';
 import { formatPokemonName } from '../utils/formatPokemonName';
@@ -9,6 +9,7 @@ import { EmptyState } from '../components/EmptyState';
 import { ErrorState } from '../components/ErrorState';
 import { LoadingSkeleton } from '../components/LoadingSkeleton';
 import { SearchBar } from '../components/SearchBar';
+import { TypeFilter } from '../components/TypeFilter';
 import { PokemonGrid } from '../components/PokemonGrid';
 import { useAppState } from '../context/AppStateContext';
 import './pages.css';
@@ -34,6 +35,7 @@ export function Comparison() {
   const [selectionError, setSelectionError] = useState(false);
   const [selectionSearchResults, setSelectionSearchResults] = useState<Pokemon[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedType, setSelectedType] = useState<PokemonTypeName | null>(null);
 
   // Fetch comparison data when slots change
   useEffect(() => {
@@ -165,12 +167,21 @@ export function Comparison() {
     setRetryCount(prev => prev + 1);
   }, []);
 
+  // Combine search results with type filtering (always called, per hooks rules)
+  const baseSelection = searchQuery && selectionSearchResults.length > 0
+    ? selectionSearchResults
+    : selectionPokemon;
+
+  const displayedSelection = useMemo(() => {
+    if (!selectedType) return baseSelection;
+    return baseSelection.filter(p =>
+      p.types.some(t => t.type.name === selectedType)
+    );
+  }, [baseSelection, selectedType]);
+
   // -------- Selection interface view --------
   if (selectionSlot !== null) {
     const slotLabel = selectionSlot === 0 ? 'Pokémon A' : 'Pokémon B';
-    const displayedSelection = searchQuery && selectionSearchResults.length > 0
-      ? selectionSearchResults
-      : selectionPokemon;
 
     return (
       <main className="compare-page">
@@ -180,6 +191,10 @@ export function Comparison() {
         <div className="compare-selection">
           <div className="compare-selection__search">
             <SearchBar onSearch={handleSelectionSearch} onClear={() => handleSelectionSearch('')} />
+          </div>
+
+          <div className="compare-selection__filters">
+            <TypeFilter selected={selectedType} onSelect={setSelectedType} />
           </div>
 
           {selectionLoading && !displayedSelection.length && <LoadingSkeleton />}
@@ -194,7 +209,7 @@ export function Comparison() {
             <div className="compare-selection__state">
               <EmptyState
                 title="No Pokémon found."
-                text="Try adjusting your search query."
+                text="Try adjusting your search query or type filter."
                 action={false}
               />
             </div>
@@ -202,8 +217,12 @@ export function Comparison() {
 
           {!selectionLoading && !selectionError && displayedSelection.length > 0 && (
             <>
-              <PokemonGrid pokemon={displayedSelection} onSelect={handleSelectPokemon} />
-              {!searchQuery && selectionHasMore && (
+              <PokemonGrid
+                pokemon={displayedSelection}
+                onSelect={handleSelectPokemon}
+                linkState={{ from: '/compare' }}
+              />
+              {!searchQuery && !selectedType && selectionHasMore && (
                 <div className="compare-selection__load-more">
                   <button
                     className="load-more"

@@ -314,6 +314,10 @@
   margin: 0 auto 40px;
 }
 
+.compare-selection__filters {
+  margin-bottom: 40px;
+}
+
 .compare-selection__state {
   max-width: 600px;
   margin: 0 auto;
