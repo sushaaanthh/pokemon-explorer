@@ -503,3 +503,46 @@
     gap: 8px;
   }
 }
+
+@media (max-width: 420px) {
+  .hero {
+    gap: 20px;
+  }
+
+  .hero__title {
+    font-size: clamp(3rem, 16vw, 4rem);
+  }
+
+  .hero__text {
+    margin: 14px 0 18px;
+    font-size: 0.95rem;
+  }
+
+  .featured {
+    min-height: 360px;
+    padding: 18px;
+  }
+
+  .featured__label {
+    top: 18px;
+    left: 18px;
+    font-size: 0.65rem;
+  }
+
+  .featured__id {
+    right: 14px;
+    font-size: clamp(3.5rem, 10vw, 5rem);
+  }
+
+  .featured__artwrap {
+    inset: 20% 6% 22%;
+  }
+
+  .featured__art {
+    width: 85%;
+  }
+
+  .state {
+    padding: 60px 16px;
+  }
+}

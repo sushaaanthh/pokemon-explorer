@@ -14,6 +14,12 @@
   clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
 }
 
+@media (max-width: 420px) {
+  .state {
+    padding: 60px 16px;
+  }
+}
+
 .state::before {
   content: '';
   position: absolute;
@@ -99,4 +105,10 @@
 
 .card-skeleton {
   height: 330px;
+}
+
+@media (max-width: 420px) {
+  .card-skeleton {
+    height: 260px;
+  }
 }

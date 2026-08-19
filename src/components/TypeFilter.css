@@ -89,3 +89,10 @@
     font-size: 0.75rem;
   }
 }
+
+@media (max-width: 380px) {
+  .type-filter__btn {
+    padding: 5px 10px;
+    font-size: 0.7rem;
+  }
+}

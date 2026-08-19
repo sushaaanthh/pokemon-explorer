@@ -225,6 +225,33 @@
   transition: border-color var(--transition-base), box-shadow var(--transition-base), transform var(--transition-base);
 }
 
+@media (max-width: 768px) {
+  .compare-panel {
+    width: 100%;
+    max-width: none;
+    padding: 18px;
+  }
+}
+
+@media (max-width: 640px) {
+  .compare-panel {
+    padding: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .compare-panel {
+    max-width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 420px) {
+  .compare-panel {
+    padding: 10px;
+  }
+}
+
 .compare-panel::before {
   content: '';
   position: absolute;

@@ -400,11 +400,11 @@ export function Comparison() {
       <main className="compare-page">
         <p className="compare-eyebrow">Retrieving data</p>
         <h1 className="compare-title">Loading Comparison...</h1>
-        <section className="compare-stage">
-          <div className="compare-panel skeleton" style={{ height: '380px' }} />
-          <div className="compare-vs-badge">VS</div>
-          <div className="compare-panel skeleton" style={{ height: '380px' }} />
-        </section>
+      <section className="compare-stage">
+        <div className="compare-panel compare-panel--skeleton skeleton" />
+        <div className="compare-vs-badge">VS</div>
+        <div className="compare-panel compare-panel--skeleton skeleton" />
+      </section>
       </main>
     );
   }

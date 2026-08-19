@@ -1,5 +1,5 @@
 import logo from '../assets/branding/logo.png';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { VaultLink } from './VaultLink';
 import { ThemeToggle } from './ThemeToggle';
@@ -21,6 +21,17 @@ export function Navigation({ theme, onToggleTheme }: NavigationProps) {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { favoritesCount, comparisonCount } = useAppState();
+
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileOpen]);
 
   return (
     <nav className="nav" role="navigation" aria-label="Main navigation">
@@ -73,6 +84,13 @@ export function Navigation({ theme, onToggleTheme }: NavigationProps) {
           </button>
         </div>
       </div>
+      {mobileOpen && (
+        <div
+          className="nav__backdrop"
+          onClick={() => setMobileOpen(false)}
+          aria-hidden="true"
+        />
+      )}
     </nav>
   );
 }

@@ -18,6 +18,65 @@
   .detail-page {
     padding: 20px 20px 64px;
   }
+
+  .stat-row {
+    grid-template-columns: 80px 1fr 30px;
+    gap: 10px;
+  }
+
+  .stat-name {
+    font-size: 0.78rem;
+  }
+
+  .stat-value {
+    font-size: 0.9rem;
+  }
+
+  .detail-skeleton-artwork {
+    min-height: 350px;
+  }
+}
+
+@media (max-width: 420px) {
+  .detail-page {
+    padding: 16px 16px 56px;
+  }
+
+  .detail-artwork-panel {
+    min-height: 320px;
+  }
+
+  .detail-name {
+    font-size: clamp(2.2rem, 7vw, 3rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .stat-row {
+    grid-template-columns: 65px 1fr 24px;
+    gap: 8px;
+  }
+
+  .stat-name {
+    font-size: 0.72rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .stat-value {
+    font-size: 0.85rem;
+  }
+
+  .detail-skeleton-artwork {
+    min-height: 280px;
+  }
+
+  .detail-skeleton-name {
+    width: 180px;
+    height: 36px;
+  }
 }
 
 /* ---- Back to Dex ---- */
