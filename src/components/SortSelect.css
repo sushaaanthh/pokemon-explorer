@@ -7,6 +7,8 @@
   align-items: center;
   gap: var(--space-3);
   min-width: 0;
+  max-width: 100%;
+  flex-wrap: wrap;
 }
 
 .sort-select__label {
@@ -74,6 +76,10 @@
 @media (max-width: 640px) {
   .sort-select {
     gap: var(--space-2);
+  }
+
+  .sort-select__wrapper {
+    width: 100%;
   }
 
   .sort-select__label {

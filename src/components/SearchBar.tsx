@@ -71,7 +71,7 @@ export function SearchBar({ onSearch, onClear }: SearchBarProps) {
         Search Pokémon by name or Pokédex number
       </label>
       <input
-        type="search"
+        type="text"
         className="search-bar__input"
         id="pokemon-search"
         placeholder="Search Pokémon by name…"
@@ -82,17 +82,17 @@ export function SearchBar({ onSearch, onClear }: SearchBarProps) {
         inputMode="search"
         autoComplete="off"
       />
-      {value.trim().length > 0 && (
-        <button
-          type="button"
-          className="search-bar__clear"
-          aria-label="Clear search"
-          onClick={handleClear}
-        >
-          ×
-        </button>
-      )}
       <span className="search-bar__actions">
+        {value.trim().length > 0 && (
+          <button
+            type="button"
+            className="search-bar__clear"
+            aria-label="Clear search"
+            onClick={handleClear}
+          >
+            ×
+          </button>
+        )}
         <button type="submit" className="search-bar__submit" aria-label="Submit search">
           Search
         </button>
