@@ -90,3 +90,13 @@
   }
 }
 
+/* ===================================================
+   MOBILE VAULT — Independent from desktop
+   =================================================== */
+@media (max-width: 768px) {
+  .vault-panel {
+    object-fit: cover;
+    object-position: center;
+  }
+}
+
