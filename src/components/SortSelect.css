@@ -6,6 +6,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
+  min-width: 0;
 }
 
 .sort-select__label {
@@ -17,22 +18,12 @@
   text-transform: uppercase;
 }
 
-.sort-select__label::after {
-  content: '';
-  display: inline-block;
-  width: 4px;
-  height: 4px;
-  background: var(--color-accent);
-  margin-left: 6px;
-  box-shadow: 0 0 4px var(--hud-glow-strong);
-  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-}
-
 .sort-select__wrapper {
   position: relative;
   display: inline-flex;
   align-items: center;
   max-width: 100%;
+  min-width: 0;
 }
 
 .sort-select__input {
@@ -51,6 +42,7 @@
               box-shadow var(--transition-fast);
   clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
   max-width: 100%;
+  min-width: 0;
 }
 
 .sort-select__input:hover {
@@ -99,17 +91,28 @@
 }
 
 @media (max-width: 380px) {
+  .sort-select {
+    gap: 4px;
+  }
+
   .sort-select__label {
-    font-size: 0.65rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.04em;
+  }
+
+  .sort-select__label::after {
+    margin-left: 2px;
+    width: 3px;
+    height: 3px;
   }
 
   .sort-select__input {
-    padding: 5px 22px 5px 6px;
+    padding: 5px 20px 5px 6px;
     font-size: 0.7rem;
   }
 
   .sort-select__chevron {
-    right: 6px;
+    right: 5px;
   }
 
   .sort-select__chevron svg {

@@ -73,6 +73,13 @@
   letter-spacing: 0.02em;
 }
 
+.search-bar__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
 .search-bar__submit {
   min-height: 56px;
   padding: 0 24px;

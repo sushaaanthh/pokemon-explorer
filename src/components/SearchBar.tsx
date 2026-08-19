@@ -61,9 +61,11 @@ export function SearchBar({ onSearch, onClear }: SearchBarProps) {
           ×
         </button>
       )}
-      <button type="submit" className="search-bar__submit" aria-label="Submit search">
-        Search
-      </button>
+      <span className="search-bar__actions">
+        <button type="submit" className="search-bar__submit" aria-label="Submit search">
+          Search
+        </button>
+      </span>
     </form>
   );
 }
