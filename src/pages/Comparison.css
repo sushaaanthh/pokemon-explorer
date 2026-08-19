@@ -36,15 +36,56 @@
   margin-bottom: 48px;
 }
 
-.compare-stage {
+.compare-stage__header {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 40px;
-  margin-bottom: 64px;
-  max-width: 1100px;
-  margin-left: auto;
-  margin-right: auto;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 32px;
+  padding: 0 8px;
+}
+
+.compare-stage__heading {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.06em;
+}
+
+.compare-clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border: 1px solid var(--hud-border);
+  border-radius: var(--hud-corner);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-surface) 92%, transparent), var(--color-surface));
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), opacity var(--transition-fast);
+  clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+}
+
+.compare-clear:hover:not(:disabled) {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  transform: translateY(-1px);
+  box-shadow: 0 0 16px var(--hud-glow);
+}
+
+.compare-clear:active:not(:disabled) {
+  transform: translateY(0) scale(0.97);
+}
+
+.compare-clear:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
 }
 
 @media (max-width: 768px) {
@@ -355,6 +396,25 @@
   font-weight: var(--fw-bold);
   font-size: 1rem;
   text-align: center;
+}
+
+.compare-stat-value--higher {
+  color: var(--color-accent);
+  text-shadow: 0 0 8px var(--hud-glow-strong);
+}
+
+.compare-stat-value--lower {
+  color: var(--color-text-tertiary);
+  opacity: 0.7;
+}
+
+.compare-stat-value--equal {
+  color: var(--color-text-secondary);
+}
+
+.compare-stat-bar--higher {
+  box-shadow: 0 0 8px var(--hud-glow-strong);
+  z-index: 1;
 }
 
 .compare-stat-bar-wrapper {

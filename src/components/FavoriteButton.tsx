@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import './FavoriteButton.css';
 
 interface FavoriteButtonProps {
@@ -7,9 +8,19 @@ interface FavoriteButtonProps {
 }
 
 export function FavoriteButton({ isFavorite, onToggle, size = 20 }: FavoriteButtonProps) {
+  const [animating, setAnimating] = useState(false);
+
+  useEffect(() => {
+    if (isFavorite) {
+      setAnimating(true);
+      const timer = setTimeout(() => setAnimating(false), 450);
+      return () => clearTimeout(timer);
+    }
+  }, [isFavorite]);
+
   return (
     <button
-      className={`fav-btn ${isFavorite ? 'fav-btn--active' : ''}`}
+      className={`fav-btn ${isFavorite ? 'fav-btn--active' : ''} ${animating ? 'fav-btn--animate' : ''}`}
       onClick={e => {
         e.preventDefault();
         e.stopPropagation();

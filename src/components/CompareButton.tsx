@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import './CompareButton.css';
 
 interface CompareButtonProps {
@@ -7,9 +8,19 @@ interface CompareButtonProps {
 }
 
 export function CompareButton({ isSelected, disabled = false, onToggle }: CompareButtonProps) {
+  const [animating, setAnimating] = useState(false);
+
+  useEffect(() => {
+    if (isSelected) {
+      setAnimating(true);
+      const timer = setTimeout(() => setAnimating(false), 350);
+      return () => clearTimeout(timer);
+    }
+  }, [isSelected]);
+
   return (
     <button
-      className={`compare-btn ${isSelected ? 'compare-btn--active' : ''}`}
+      className={`compare-btn ${isSelected ? 'compare-btn--active' : ''} ${animating ? 'compare-btn--animate' : ''}`}
       onClick={e => {
         e.preventDefault();
         e.stopPropagation();

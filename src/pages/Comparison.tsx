@@ -453,6 +453,12 @@ export function Comparison() {
 
       {/* Comparison Stage */}
       <section className="compare-stage">
+        <div className="compare-stage__header">
+          <h2 className="compare-stage__heading">Comparison Stage</h2>
+          <button className="compare-clear" onClick={() => { clearComparison(); }} disabled={comparison.length === 0}>
+            Clear Comparison
+          </button>
+        </div>
 
         {/* Left Pokemon / Empty Slot */}
         {leftPokemon ? (
@@ -631,22 +637,40 @@ export function Comparison() {
               const leftPct = Math.min((leftVal / maxStat) * 100, 100);
               const rightPct = Math.min((rightVal / maxStat) * 100, 100);
 
+              let leftClass = 'compare-stat-value';
+              let rightClass = 'compare-stat-value';
+              let leftBarClass = 'compare-stat-bar-left';
+              let rightBarClass = 'compare-stat-bar-right';
+
+              if (leftVal > rightVal) {
+                leftClass += ' compare-stat-value--higher';
+                rightClass += ' compare-stat-value--lower';
+                leftBarClass += ' compare-stat-bar--higher';
+              } else if (rightVal > leftVal) {
+                rightClass += ' compare-stat-value--higher';
+                leftClass += ' compare-stat-value--lower';
+                rightBarClass += ' compare-stat-bar--higher';
+              } else {
+                leftClass += ' compare-stat-value--equal';
+                rightClass += ' compare-stat-value--equal';
+              }
+
               return (
                 <div className="compare-stat-row" key={stat}>
                   <p className="compare-stat-name">{formatPokemonName(stat)}</p>
                   <div className="compare-stat-bar-container">
-                    <span className="compare-stat-value">{leftVal}</span>
+                    <span className={leftClass}>{leftVal}</span>
                     <div className="compare-stat-bar-wrapper">
                       <div
-                        className="compare-stat-bar-left"
+                        className={leftBarClass}
                         style={{ width: `${leftPct}%`, backgroundColor: leftColor }}
                       />
                       <div
-                        className="compare-stat-bar-right"
+                        className={rightBarClass}
                         style={{ width: `${rightPct}%`, backgroundColor: rightColor }}
                       />
                     </div>
-                    <span className="compare-stat-value">{rightVal}</span>
+                    <span className={rightClass}>{rightVal}</span>
                   </div>
                 </div>
               );

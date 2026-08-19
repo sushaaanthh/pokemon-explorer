@@ -74,6 +74,11 @@
   color: var(--color-background);
 }
 
+.type-filter__btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus), 0 0 12px var(--hud-glow);
+}
+
 .type-filter__btn:active {
   transform: scale(0.95);
 }

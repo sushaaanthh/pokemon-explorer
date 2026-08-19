@@ -44,6 +44,16 @@
   box-shadow: 0 0 12px var(--hud-glow-strong);
 }
 
+@keyframes compare-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.compare-btn--active.compare-btn--animate {
+  animation: compare-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
 .compare-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;

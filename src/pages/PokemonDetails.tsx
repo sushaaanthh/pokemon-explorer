@@ -1,4 +1,4 @@
-import { useParams, Link, useLocation } from 'react-router-dom';
+import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import type { Pokemon } from '../types/pokemon';
 import { getPokemon } from '../services/pokemonApi';
@@ -18,6 +18,7 @@ const INITIAL_MOVES_COUNT = 12;
 export function PokemonDetails() {
   const { name: identifier } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const [pokemon, setPokemon] = useState<Pokemon | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -29,6 +30,28 @@ export function PokemonDetails() {
   const backFromCompare = (location.state as { from?: string } | null)?.from === '/compare';
   const backTo = backFromCompare ? '/compare' : '/';
   const backLabel = backFromCompare ? 'Back to Compare' : 'Back to Dex';
+
+  // Left/Right arrow keyboard navigation for Details page
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (loading || error || !pokemon) return;
+
+      const tag = (document.activeElement?.tagName || '').toLowerCase();
+      const isInput = tag === 'input' || tag === 'textarea' || tag === 'select' || (document.activeElement as HTMLElement | null)?.isContentEditable;
+      if (isInput) return;
+
+      if (e.key === 'ArrowLeft' && pokemon.id > 1) {
+        e.preventDefault();
+        navigate(`/pokemon/${pokemon.id - 1}`);
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        navigate(`/pokemon/${pokemon.id + 1}`);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [pokemon, loading, error, navigate]);
 
   const fetchPokemon = useCallback(async () => {
     if (!identifier) {
