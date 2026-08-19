@@ -123,8 +123,9 @@
 }
 
 .pokemon-card__artwork {
-  width: 165px;
-  height: 165px;
+  width: min(165px, 100%);
+  height: auto;
+  aspect-ratio: 1 / 1;
   object-fit: contain;
   z-index: 1;
   transition: transform var(--transition-smooth);
@@ -204,12 +205,17 @@
 
 @media (max-width: 480px) {
   .pokemon-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
 
   .pokemon-card {
-    min-height: 280px;
-    padding: 14px;
+    min-height: auto;
+    padding: 16px;
+  }
+
+  .pokemon-card__artwork-wrap {
+    height: auto;
+    min-height: 140px;
   }
 }

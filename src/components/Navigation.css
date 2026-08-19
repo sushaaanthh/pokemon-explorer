@@ -168,7 +168,12 @@
 
 @media (max-width: 900px) {
   .nav__inner {
-    grid-template-columns: auto auto;
+    grid-template-columns: 1fr auto;
+  }
+
+  .nav__brand {
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .nav__links {
@@ -186,6 +191,8 @@
     transition: transform var(--transition-smooth), opacity var(--transition-smooth);
     backdrop-filter: blur(16px) saturate(140%);
     -webkit-backdrop-filter: blur(16px) saturate(140%);
+    max-height: calc(100vh - 76px);
+    overflow-y: auto;
   }
 
   .nav__links--open {

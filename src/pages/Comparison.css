@@ -99,7 +99,14 @@
 @media (max-width: 768px) {
   .compare-stage {
     flex-direction: column;
+    align-items: center;
     gap: 40px;
+  }
+
+  .compare-panel {
+    width: 100%;
+    max-width: 360px;
+    padding: 24px;
   }
 }
 

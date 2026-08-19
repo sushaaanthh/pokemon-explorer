@@ -82,3 +82,10 @@
 .type-filter__btn:active {
   transform: scale(0.95);
 }
+
+@media (max-width: 480px) {
+  .type-filter__btn {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
+}
