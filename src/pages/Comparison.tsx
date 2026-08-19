@@ -348,11 +348,11 @@ export function Comparison() {
               {!searchQuery && hasMore && (
                 <div className="compare-selection__load-more">
                   {(selectedType && typeLoadMoreError) || (!selectedType && selectionLoadMoreError) ? (
-                    <div style={{ textAlign: 'center' }}>
-                      <p style={{ color: 'var(--color-accent)', fontWeight: 'var(--fw-bold)', fontSize: '0.9rem', marginBottom: '12px' }}>
+                    <div className="compare-page-center">
+                      <p className="load-more-error__text">
                         Couldn't load more Pokémon.
                       </p>
-                      <button className="state__action" onClick={loadMoreSelection} style={{ margin: 0 }}>
+                      <button className="state__action" onClick={loadMoreSelection}>
                         Retry
                       </button>
                     </div>
@@ -361,7 +361,6 @@ export function Comparison() {
                       className="load-more"
                       onClick={loadMoreSelection}
                       disabled={isLoadingMore}
-                      style={{ margin: 0 }}
                     >
                       {isLoadingMore ? 'Loading…' : 'Load More'}
                     </button>
@@ -416,7 +415,7 @@ export function Comparison() {
       <main className="compare-page">
         <p className="compare-eyebrow">Connection Error</p>
         <h1 className="compare-title">Failed to Load</h1>
-        <div style={{ maxWidth: '600px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div className="compare-page-center">
           <ErrorState onRetry={handleRetry} />
         </div>
       </main>
@@ -433,7 +432,7 @@ export function Comparison() {
       <main className="compare-page">
         <p className="compare-eyebrow">Compare Pokémon</p>
         <h1 className="compare-title">No Pokémon Selected</h1>
-        <div style={{ maxWidth: '600px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div className="compare-page-center">
           <EmptyState
             title="Comparison stage is empty."
             text="Choose two Pokémon to see their stats side-by-side."
@@ -502,6 +501,7 @@ export function Comparison() {
                 className="compare-image"
                 src={leftPokemon.sprites.other?.['official-artwork']?.front_default ?? leftPokemon.sprites.front_default ?? ''}
                 alt={formatPokemonName(leftPokemon.name)}
+                decoding="async"
               />
             </div>
             <h2 className="compare-name">{formatPokemonName(leftPokemon.name)}</h2>
@@ -528,12 +528,12 @@ export function Comparison() {
           >
             <span className="compare-id">#???</span>
             <div className="compare-image-container">
-              <div style={{ width: '130px', height: '130px', borderRadius: '50%', background: 'rgba(255,255,255,0.03)', border: '2px dashed rgba(255,255,255,0.1)', display: 'grid', placeItems: 'center' }}>
-                <span style={{ fontSize: '2rem', color: 'rgba(255,255,255,0.2)' }}>?</span>
+              <div className="compare-empty-slot-placeholder">
+                <span className="compare-empty-slot-placeholder__icon">?</span>
               </div>
             </div>
-            <h2 className="compare-name" style={{ color: 'var(--color-text-tertiary)' }}>Choose Pokémon</h2>
-            <span className="compare-type-badge" style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--color-text-tertiary)' }}>
+            <h2 className="compare-name compare-empty-slot-name">Choose Pokémon</h2>
+            <span className="compare-type-badge compare-empty-slot-badge">
               Tap to select
             </span>
           </article>
@@ -584,6 +584,7 @@ export function Comparison() {
                 className="compare-image"
                 src={rightPokemon.sprites.other?.['official-artwork']?.front_default ?? rightPokemon.sprites.front_default ?? ''}
                 alt={formatPokemonName(rightPokemon.name)}
+                decoding="async"
               />
             </div>
             <h2 className="compare-name">{formatPokemonName(rightPokemon.name)}</h2>
@@ -610,12 +611,12 @@ export function Comparison() {
           >
             <span className="compare-id">#???</span>
             <div className="compare-image-container">
-              <div style={{ width: '130px', height: '130px', borderRadius: '50%', background: 'rgba(255,255,255,0.03)', border: '2px dashed rgba(255,255,255,0.1)', display: 'grid', placeItems: 'center' }}>
-                <span style={{ fontSize: '2rem', color: 'rgba(255,255,255,0.2)' }}>?</span>
+              <div className="compare-empty-slot-placeholder">
+                <span className="compare-empty-slot-placeholder__icon">?</span>
               </div>
             </div>
-            <h2 className="compare-name" style={{ color: 'var(--color-text-tertiary)' }}>Choose Pokémon</h2>
-            <span className="compare-type-badge" style={{ backgroundColor: 'rgba(255,255,255,0.05)', color: 'var(--color-text-tertiary)' }}>
+            <h2 className="compare-name compare-empty-slot-name">Choose Pokémon</h2>
+            <span className="compare-type-badge compare-empty-slot-badge">
               Tap to select
             </span>
           </article>
@@ -678,17 +679,16 @@ export function Comparison() {
           </div>
         </section>
       ) : (
-        <section className="compare-stats-section" style={{ textAlign: 'center', padding: '48px' }}>
+        <section className="compare-stats-section compare-stats-awaiting">
           <p className="compare-section-title">Awaiting Contenders</p>
-          <h2 className="compare-section-heading" style={{ fontSize: '1.6rem', marginBottom: '16px' }}>Select another Pokémon</h2>
+          <h2 className="compare-section-heading compare-stats-awaiting-heading">Select another Pokémon</h2>
           <button
             className="state__action"
-               onClick={() => openFreeSelection()}
-            style={{ margin: 0 }}
+            onClick={() => openFreeSelection()}
           >
             Choose Pokémon
           </button>
-          <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.9rem', maxWidth: '400px', margin: '24px auto 0' }}>
+          <p className="compare-stats-awaiting-text">
             Select a Pokémon to activate the head-to-head comparison.
           </p>
         </section>

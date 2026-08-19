@@ -212,6 +212,7 @@ export function PokemonDetails() {
             src={imgSrc}
             alt={`${formatPokemonName(pokemon.name)} artwork`}
             className="detail-artwork-image"
+            decoding="async"
             onError={() => setImageError(true)}
           />
         </section>

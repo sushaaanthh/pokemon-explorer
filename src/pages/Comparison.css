@@ -587,3 +587,56 @@
 .compare-selection__cancel:active {
   transform: translateY(0) scale(0.97);
 }
+
+/* ===================================================
+   COMPARISON — INLINE STYLE REPLACEMENTS
+   =================================================== */
+
+.compare-page-center {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.compare-stats-awaiting {
+  text-align: center;
+  padding: 48px;
+}
+
+.compare-stats-awaiting-heading {
+  font-size: 1.6rem;
+  margin-bottom: 16px;
+}
+
+.compare-stats-awaiting-text {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  max-width: 400px;
+  margin: 24px auto 0;
+}
+
+.compare-empty-slot-placeholder {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.03);
+  border: 2px dashed rgba(255,255,255,0.1);
+  display: grid;
+  place-items: center;
+}
+
+.compare-empty-slot-placeholder__icon {
+  font-size: 2rem;
+  color: rgba(255,255,255,0.2);
+}
+
+.compare-empty-slot-name {
+  color: var(--color-text-tertiary);
+}
+
+.compare-empty-slot-badge {
+  background: rgba(255,255,255,0.05);
+  color: var(--color-text-tertiary);
+}

@@ -18,7 +18,7 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <section className="state">
-      <span>◇</span>
+      <span aria-hidden="true">◇</span>
       <h2>{title}</h2>
       <p>{text}</p>
       {action &&

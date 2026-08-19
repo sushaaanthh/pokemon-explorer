@@ -14,6 +14,7 @@ export function TypeFilter({ selected, onSelect }: TypeFilterProps) {
       <button
         className={`type-filter__btn ${selected === null ? 'type-filter__btn--active' : ''}`}
         onClick={() => onSelect(null)}
+        aria-pressed={selected === null}
       >
         All
       </button>
@@ -31,6 +32,7 @@ export function TypeFilter({ selected, onSelect }: TypeFilterProps) {
                 : {}),
             } as React.CSSProperties}
             onClick={() => onSelect(isActive ? null : type)}
+            aria-pressed={isActive}
           >
             {formatPokemonName(type)}
           </button>

@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Link } from 'react-router-dom';
 import type { Pokemon } from '../types/pokemon';
 import { getTypeColor } from '../utils/pokemonTypeColors';
@@ -24,7 +25,7 @@ function getArtwork(pokemon: Pokemon): string {
   );
 }
 
-export function PokemonCard({ pokemon, onSelect, linkState }: PokemonCardProps) {
+export const PokemonCard = memo(function PokemonCard({ pokemon, onSelect, linkState }: PokemonCardProps) {
   const { isFavorite, toggleFavorite, isCompareSelected, toggleComparison } = useAppState();
   const primaryType = pokemon.types[0]?.type.name ?? 'normal';
   const typeColor = getTypeColor(primaryType);
@@ -33,7 +34,7 @@ export function PokemonCard({ pokemon, onSelect, linkState }: PokemonCardProps) 
 
   const favorite = isFavorite(pokemon.id);
   const compareSelected = isCompareSelected(pokemon.id);
-  const compareDisabled = false; // Always clickable so the "full" notice can display
+  const compareDisabled = false;
 
   const handleCompare = () => {
     if (onSelect) {
@@ -50,16 +51,13 @@ export function PokemonCard({ pokemon, onSelect, linkState }: PokemonCardProps) 
       className="pokemon-card"
       style={{ '--card-type-color': typeColor } as React.CSSProperties}
     >
-      {/* Background Pokédex ID */}
       <span className="pokemon-card__bg-id">{formatPokemonId(pokemon.id)}</span>
 
-      {/* Top bar */}
       <div className="pokemon-card__top">
         <span className="pokemon-card__id">{formatPokemonId(pokemon.id)}</span>
         <FavoriteButton isFavorite={favorite} onToggle={() => toggleFavorite(pokemon.id)} />
       </div>
 
-      {/* Artwork */}
       <div className="pokemon-card__artwork-wrap">
         <div className="pokemon-card__glow" />
         <img
@@ -67,12 +65,12 @@ export function PokemonCard({ pokemon, onSelect, linkState }: PokemonCardProps) 
           src={artwork}
           alt={pokemon.name}
           loading="lazy"
+          decoding="async"
           width="160"
           height="160"
         />
       </div>
 
-      {/* Info */}
       <div className="pokemon-card__info">
         <h3 className="pokemon-card__name">{formatPokemonName(pokemon.name)}</h3>
         <div className="pokemon-card__types">
@@ -88,7 +86,6 @@ export function PokemonCard({ pokemon, onSelect, linkState }: PokemonCardProps) 
         </div>
       </div>
 
-      {/* Footer */}
       <div className="pokemon-card__footer">
         {hpStat && (
           <span className="pokemon-card__stat">
@@ -103,4 +100,4 @@ export function PokemonCard({ pokemon, onSelect, linkState }: PokemonCardProps) 
       </div>
     </Link>
   );
-}
+});

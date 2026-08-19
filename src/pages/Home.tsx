@@ -62,6 +62,10 @@ export function Home() {
 
   const isMounted = useRef(true);
   const searchTimeoutRef = useRef<number | null>(null);
+  const allPokemonRef = useRef(allPokemon);
+  allPokemonRef.current = allPokemon;
+  const queryRef = useRef(query);
+  queryRef.current = query;
 
   useEffect(() => {
     isMounted.current = true;
@@ -129,48 +133,48 @@ export function Home() {
     }
   }, []);
 
-  // Search by name or ID
+  const fetchAllInitialRef = useRef(fetchAllInitial);
+  fetchAllInitialRef.current = fetchAllInitial;
+
   const performSearch = useCallback(async (searchQuery: string) => {
+    if (!isMounted.current) return;
+
     const trimmed = searchQuery.trim();
     if (!trimmed) {
-      // Empty query clears search and reverts to 'all'
       setMode('all');
-      if (allPokemon.length === 0) {
-        fetchAllInitial();
+      if (allPokemonRef.current.length === 0) {
+        fetchAllInitialRef.current();
       }
       return;
     }
 
     setIsLoading(true);
     setError(false);
-    setSelectedType(null); // Clear active type filter
+    setSelectedType(null);
     try {
-      // PokéAPI search is case-insensitive for names
       const searchParam = isNaN(Number(trimmed)) ? trimmed.toLowerCase() : Number(trimmed);
       const result = await getPokemon(searchParam);
-      if (!isMounted.current) return;
 
       setSearchPokemon([result]);
       setMode('search');
     } catch {
-      if (!isMounted.current) return;
       setSearchPokemon([]);
       setError(true);
       setMode('search');
     } finally {
       if (isMounted.current) {
         setIsLoading(false);
-        // Update URL search param to preserve search state when navigating to Details and returning
         const url = new URL(window.location.href);
-        if (query.trim()) {
-          url.searchParams.set('q', query.trim());
+        const currentQuery = queryRef.current;
+        if (currentQuery.trim()) {
+          url.searchParams.set('q', currentQuery.trim());
         } else {
           url.searchParams.delete('q');
         }
         window.history.replaceState({}, document.title, url);
       }
     }
-  }, [allPokemon.length, fetchAllInitial]);
+  }, []);
 
   // Load first page of 'all' on mount
   useEffect(() => {
@@ -194,16 +198,16 @@ export function Home() {
   // Handle Type Filter clicks
   const handleTypeSelect = useCallback((type: PokemonTypeName | null) => {
     setSelectedType(type);
-    setQuery(''); // Reset search input
+    setQuery('');
     if (type === null) {
       setMode('all');
-      if (allPokemon.length === 0) {
-        fetchAllInitial();
+      if (allPokemonRef.current.length === 0) {
+        fetchAllInitialRef.current();
       }
     } else {
       fetchTypeInitial(type);
     }
-  }, [allPokemon.length, fetchAllInitial, fetchTypeInitial]);
+  }, [fetchTypeInitial]);
 
   // Load More logic
   const loadMoreData = useCallback(async () => {
@@ -262,10 +266,10 @@ export function Home() {
     setQuery('');
     setSelectedType(null);
     setMode('all');
-    if (allPokemon.length === 0) {
-      fetchAllInitial();
+    if (allPokemonRef.current.length === 0) {
+      fetchAllInitialRef.current();
     }
-  }, [allPokemon.length, fetchAllInitial]);
+  }, []);
 
   // Derived state: Total Count & hasMore
   const totalCount = useMemo(() => {
@@ -321,12 +325,12 @@ export function Home() {
           <SearchBar onSearch={setQuery} onClear={handleClearAllFilters} />
         </div>
 
-        <div className="hero__feature">
-          <div className="hero-pokeball">
-            <span className="hero-pokeball__glow" aria-hidden="true" />
-            <img src={pokeballImage} alt="Poké Ball" className="hero-pokeball__image" />
+          <div className="hero__feature">
+            <div className="hero-pokeball">
+              <span className="hero-pokeball__glow" aria-hidden="true" />
+              <img src={pokeballImage} alt="Poké Ball" className="hero-pokeball__image" decoding="async" fetchPriority="high" />
+            </div>
           </div>
-        </div>
       </section>
 
       <section className="browse">
@@ -348,27 +352,27 @@ export function Home() {
           {!isLoading && error && (
             <div className="browse-error-container">
               {mode === 'search' ? (
-                <EmptyState 
-                  title="No Pokémon found." 
-                  text={`We couldn't find any Pokémon matching "${query}".`} 
+                <EmptyState
+                  title="No Pokémon found."
+                  text={`We couldn't find any Pokémon matching "${query}".`}
                   action={false}
                 />
               ) : (
                 <ErrorState onRetry={handleInitialRetry} />
               )}
-              <div style={{ textAlign: 'center', marginTop: '24px' }}>
-                <button className="state__action" onClick={handleClearAllFilters} style={{ margin: 0 }}>
+              <div className="state-action-center">
+                <button className="state__action" onClick={handleClearAllFilters}>
                   Back to Pokédex
                 </button>
               </div>
             </div>
           )}
-          
+
           {!isLoading && !error && displayedPokemon.length === 0 && (
             <div className="browse-empty-container">
               <EmptyState title="No Pokémon found." text="Try adjusting your filters or search query." action={false} />
-              <div style={{ textAlign: 'center', marginTop: '24px' }}>
-                <button className="state__action" onClick={handleClearAllFilters} style={{ margin: 0 }}>
+              <div className="state-action-center">
+                <button className="state__action" onClick={handleClearAllFilters}>
                   Reset Filters
                 </button>
               </div>
@@ -389,22 +393,22 @@ export function Home() {
 
         {/* Load More / Loading / Error footer */}
         {!isLoading && !error && displayedPokemon.length > 0 && (
-          <div className="browse__load-more-container" style={{ marginTop: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+          <div className="browse__load-more-container">
             {isLoadingMore && <LoadingSkeleton />}
-            
+
             {loadMoreError && (
-              <div className="load-more-error" style={{ textAlign: 'center' }}>
-                <p style={{ color: 'var(--color-accent)', fontWeight: 'var(--fw-bold)', fontSize: '0.9rem', marginBottom: '12px' }}>
+              <div className="load-more-error">
+                <p className="load-more-error__text">
                   Couldn't load more Pokémon.
                 </p>
-                <button className="state__action" onClick={handleLoadMoreRetry} style={{ margin: 0 }}>
+                <button className="state__action" onClick={handleLoadMoreRetry}>
                   Retry
                 </button>
               </div>
             )}
-            
+
             {!isLoadingMore && !loadMoreError && hasMore && (
-              <button className="load-more" onClick={loadMoreData} style={{ margin: 0 }}>
+              <button className="load-more" onClick={loadMoreData}>
                 Load More
               </button>
             )}
