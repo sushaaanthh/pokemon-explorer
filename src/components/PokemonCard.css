@@ -58,6 +58,20 @@
   box-shadow: var(--shadow-inner-glow), var(--shadow-card-hover), 0 0 24px var(--hud-glow);
 }
 
+@media (hover: hover) {
+  .pokemon-card:hover .pokemon-card__artwork {
+    transform: scale(1.08) translateY(-2px);
+  }
+}
+
+@media (hover: none) {
+  .pokemon-card:active {
+    transform: translateY(-2px) scale(1.01);
+    border-color: color-mix(in srgb, var(--card-type-color) 40%, var(--hud-border));
+    box-shadow: var(--shadow-inner-glow), var(--shadow-card-hover), 0 0 16px var(--hud-glow);
+  }
+}
+
 .pokemon-card:focus-visible {
   outline: none;
   border-color: var(--color-accent);
@@ -109,6 +123,7 @@
   place-items: center;
   position: relative;
   margin-top: 8px;
+  overflow: hidden;
 }
 
 .pokemon-card__glow {

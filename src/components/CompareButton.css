@@ -19,6 +19,9 @@
               box-shadow var(--transition-fast),
               transform var(--transition-fast);
   clip-path: polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px);
+  min-height: 44px;
+  min-width: 44px;
+  cursor: pointer;
 }
 
 .compare-btn:hover:not(:disabled) {
@@ -57,4 +60,19 @@
 .compare-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+.compare-btn__label {
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .compare-btn__label {
+    display: none;
+  }
+
+  .compare-btn {
+    padding: var(--space-1);
+    justify-content: center;
+  }
 }

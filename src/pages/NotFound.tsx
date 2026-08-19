@@ -4,7 +4,7 @@ import './NotFound.css';
 
 export function NotFound() {
   return (
-    <main className="notfound-page">
+    <main className="notfound-page" id="main-content">
       <div className="notfound">
         <div className="notfound__glow" aria-hidden="true" />
         <div className="notfound__logo-wrap">

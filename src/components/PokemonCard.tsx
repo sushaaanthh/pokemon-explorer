@@ -66,8 +66,8 @@ export const PokemonCard = memo(function PokemonCard({ pokemon, onSelect, linkSt
           alt={pokemon.name}
           loading="lazy"
           decoding="async"
-          width="160"
-          height="160"
+          width="165"
+          height="165"
         />
       </div>
 

@@ -27,6 +27,7 @@ function AppShell() {
 
   return (
     <VaultTransitionProvider>
+      <a href="#main-content" className="skip-link">Skip to main content</a>
       <Navigation
         theme={theme}
         onToggleTheme={toggleTheme}

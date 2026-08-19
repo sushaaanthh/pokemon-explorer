@@ -23,7 +23,7 @@ export function EmptyState({
       <p>{text}</p>
       {action &&
         (onAction ? (
-          <button className="state__action" onClick={onAction}>
+          <button className="state__action" onClick={onAction} type="button">
             {actionLabel}
           </button>
         ) : (

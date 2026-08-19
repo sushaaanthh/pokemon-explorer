@@ -4,7 +4,7 @@ import './States.css'; export function ErrorState({ onRetry }: { onRetry?: () =>
       <span aria-hidden="true">!</span>
       <h2>Something went wrong.</h2>
       <p>We couldn't load the Pokémon right now.</p>
-      {onRetry && <button className="state__action" onClick={onRetry}>Try Again</button>}
+      {onRetry && <button className="state__action" onClick={onRetry} type="button">Try Again</button>}
     </section>
   );
 }

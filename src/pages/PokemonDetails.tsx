@@ -102,7 +102,7 @@ export function PokemonDetails() {
   // Loading skeleton
   if (loading) {
     return (
-      <main className="detail-page">
+      <main className="detail-page" id="main-content">
         <Link to={backTo} className="detail-back">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6" />
@@ -150,7 +150,7 @@ export function PokemonDetails() {
   // Error or not found
   if (error || !pokemon) {
     return (
-      <main className="detail-page">
+      <main className="detail-page" id="main-content">
         <Link to={backTo} className="detail-back">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6" />
@@ -184,7 +184,7 @@ export function PokemonDetails() {
   const remainingMoves = pokemon.moves.length - INITIAL_MOVES_COUNT;
 
   return (
-    <main className="detail-page" style={{ '--card-type-color': primaryColor } as React.CSSProperties}>
+    <main className="detail-page" style={{ '--card-type-color': primaryColor } as React.CSSProperties} id="main-content">
       <Link to={backTo} className="detail-back" state={location.state}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="15 18 9 12 15 6" />
@@ -213,6 +213,9 @@ export function PokemonDetails() {
             alt={`${formatPokemonName(pokemon.name)} artwork`}
             className="detail-artwork-image"
             decoding="async"
+            loading="eager"
+            width="450"
+            height="450"
             onError={() => setImageError(true)}
           />
         </section>

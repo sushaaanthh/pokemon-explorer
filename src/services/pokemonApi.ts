@@ -3,6 +3,7 @@ import type { Pokemon, PokemonListResponse } from '../types/pokemon';
 const API_BASE = 'https://pokeapi.co/api/v2';
 
 const pokemonCache: Record<string, Pokemon> = {};
+const inFlightRequests: Record<string, Promise<Pokemon> | undefined> = {};
 
 async function fetchJson<T>(url: string): Promise<T> {
   const response = await fetch(url);
@@ -26,11 +27,23 @@ export async function getPokemon(nameOrId: string | number): Promise<Pokemon> {
   if (pokemonCache[cacheKey]) {
     return pokemonCache[cacheKey];
   }
-  const pokemon = await fetchJson<Pokemon>(`${API_BASE}/pokemon/${nameOrId}`);
-  // Cache by both name and ID
-  pokemonCache[pokemon.name.toLowerCase()] = pokemon;
-  pokemonCache[pokemon.id.toString()] = pokemon;
-  return pokemon;
+  const existing = inFlightRequests[cacheKey];
+  if (existing) {
+    return existing;
+  }
+
+  const promise: Promise<Pokemon> = fetchJson<Pokemon>(`${API_BASE}/pokemon/${nameOrId}`).then(pokemon => {
+    delete inFlightRequests[cacheKey];
+    pokemonCache[pokemon.name.toLowerCase()] = pokemon;
+    pokemonCache[pokemon.id.toString()] = pokemon;
+    return pokemon;
+  }).catch(err => {
+    delete inFlightRequests[cacheKey];
+    throw err;
+  });
+
+  inFlightRequests[cacheKey] = promise;
+  return promise;
 }
 
 export async function getPokemonDetailsBatch(names: string[]): Promise<Pokemon[]> {
@@ -55,4 +68,3 @@ export async function getPokemonByType(type: string): Promise<Pokemon[]> {
   );
   return Promise.all(promises);
 }
-

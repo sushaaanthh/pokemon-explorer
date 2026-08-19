@@ -41,7 +41,7 @@ export function Favorites() {
 
   if (loading) {
     return (
-      <main className="page subpage">
+      <main className="page subpage" id="main-content">
         <p className="eyebrow">Your collection</p>
         <h1>Your Favorites</h1>
         <p className="subpage__lead">Loading your collection…</p>
@@ -52,7 +52,7 @@ export function Favorites() {
 
   if (error) {
     return (
-      <main className="page subpage">
+      <main className="page subpage" id="main-content">
         <p className="eyebrow">Your collection</p>
         <h1>Your Favorites</h1>
         <p className="subpage__lead">Something went wrong.</p>
@@ -62,7 +62,7 @@ export function Favorites() {
   }
 
   return (
-    <main className="page subpage">
+    <main className="page subpage" id="main-content">
       <p className="eyebrow">Your collection</p>
       <h1>Your Favorites</h1>
       {pokemon.length > 0 ? (

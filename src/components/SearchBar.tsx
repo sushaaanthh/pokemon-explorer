@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import './SearchBar.css';
 
 interface SearchBarProps {
@@ -8,10 +8,23 @@ interface SearchBarProps {
 
 export function SearchBar({ onSearch, onClear }: SearchBarProps) {
   const [value, setValue] = useState('');
+  const searchTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+        searchTimeoutRef.current = null;
+      }
       onSearch(value.trim());
     },
     [value, onSearch]
@@ -20,6 +33,10 @@ export function SearchBar({ onSearch, onClear }: SearchBarProps) {
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === 'Escape') {
+        if (searchTimeoutRef.current) {
+          clearTimeout(searchTimeoutRef.current);
+          searchTimeoutRef.current = null;
+        }
         setValue('');
         onSearch('');
         onClear?.();
@@ -29,28 +46,39 @@ export function SearchBar({ onSearch, onClear }: SearchBarProps) {
   );
 
   const handleClear = useCallback(() => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+      searchTimeoutRef.current = null;
+    }
     setValue('');
     onSearch('');
     onClear?.();
   }, [onClear, onSearch]);
 
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(e.target.value);
+  }, []);
+
   return (
-    <form className="search-bar" onSubmit={handleSubmit} role="search">
-      <div className="search-bar__icon">
+    <form className="search-bar" onSubmit={handleSubmit} role="search" aria-label="Search Pokémon">
+      <div className="search-bar__icon" aria-hidden="true">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="11" cy="11" r="8" />
           <line x1="21" y1="21" x2="16.65" y2="16.65" />
         </svg>
       </div>
+      <label htmlFor="pokemon-search" className="search-bar__sr-label">
+        Search Pokémon by name or Pokédex number
+      </label>
       <input
-        type="text"
+        type="search"
         className="search-bar__input"
+        id="pokemon-search"
         placeholder="Search Pokémon by name…"
         value={value}
-        onChange={e => setValue(e.target.value)}
+        onChange={handleChange}
         onKeyDown={handleKeyDown}
-        aria-label="Search Pokémon by name"
-        id="pokemon-search"
+        aria-label="Search Pokémon by name or Pokédex number"
         inputMode="search"
         autoComplete="off"
       />

@@ -48,8 +48,10 @@ export function FeaturedPokemon({ pokemon }: { pokemon: Pokemon }) {
           className="featured__art"
           src={imageError ? fallbackArt : (art ?? fallbackArt)}
           alt=""
-          loading="lazy"
+          loading="eager"
           decoding="async"
+          width="520"
+          height="520"
           onError={() => setImageError(true)}
         />
       </div>

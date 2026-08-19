@@ -298,7 +298,7 @@ export function Comparison() {
     const eyebrow = isFreeMode ? 'Explore Pokémon' : `Choose ${slotLabel}`;
 
     return (
-      <main className="compare-page">
+      <main className="compare-page" id="main-content">
         <p className="compare-eyebrow">{eyebrow}</p>
         <h1 className="compare-title">Select Pokémon</h1>
 
@@ -397,7 +397,7 @@ export function Comparison() {
   // -------- Loading state --------
   if (isLoading) {
     return (
-      <main className="compare-page">
+      <main className="compare-page" id="main-content">
         <p className="compare-eyebrow">Retrieving data</p>
         <h1 className="compare-title">Loading Comparison...</h1>
       <section className="compare-stage">
@@ -412,7 +412,7 @@ export function Comparison() {
   // -------- Error state --------
   if (error) {
     return (
-      <main className="compare-page">
+      <main className="compare-page" id="main-content">
         <p className="compare-eyebrow">Connection Error</p>
         <h1 className="compare-title">Failed to Load</h1>
         <div className="compare-page-center">
@@ -429,7 +429,7 @@ export function Comparison() {
   // -------- Empty state (no comparison selections) --------
   if (comparison.length === 0) {
     return (
-      <main className="compare-page">
+      <main className="compare-page" id="main-content">
         <p className="compare-eyebrow">Compare Pokémon</p>
         <h1 className="compare-title">No Pokémon Selected</h1>
         <div className="compare-page-center">
@@ -446,7 +446,7 @@ export function Comparison() {
 
   // -------- Comparison view with slots --------
   return (
-    <main className="compare-page">
+    <main className="compare-page" id="main-content">
       <p className="compare-eyebrow">Choose your champions</p>
       <h1 className="compare-title">Compare Pokémon</h1>
 
@@ -461,41 +461,45 @@ export function Comparison() {
 
         {/* Left Pokemon / Empty Slot */}
         {leftPokemon ? (
-          <article
+          <button
             className="compare-panel"
             style={{ '--card-type-color': leftColor } as CSSProperties}
-            role="button"
-            tabIndex={0}
             onClick={() => openSelection(0)}
-            onKeyDown={e => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                openSelection(0);
-              }
-            }}
+            type="button"
           >
             <span className="compare-glow" aria-hidden="true" />
               <span className="compare-id">{formatPokemonId(leftPokemon.id)}</span>
-              <button
+              <div
                 className="compare-remove"
                 onClick={e => {
                   e.stopPropagation();
                   handleRemoveSlot(0);
                 }}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleRemoveSlot(0);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
                 aria-label={`Remove ${formatPokemonName(leftPokemon.name)} from comparison`}
                 title="Remove from comparison"
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
                   <line x1="18" y1="6" x2="6" y2="18" />
                   <line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
-              </button>
+              </div>
               <div className="compare-image-container">
               <img
                 className="compare-image"
                 src={leftPokemon.sprites.other?.['official-artwork']?.front_default ?? leftPokemon.sprites.front_default ?? ''}
                 alt={formatPokemonName(leftPokemon.name)}
                 decoding="async"
+                width="400"
+                height="400"
               />
             </div>
             <h2 className="compare-name">{formatPokemonName(leftPokemon.name)}</h2>
@@ -505,20 +509,12 @@ export function Comparison() {
             >
               {formatPokemonName(leftPokemon.types[0].type.name)}
             </span>
-          </article>
+          </button>
         ) : (
-          <article
+          <button
             className="compare-panel compare-panel--empty"
-            role="button"
-            tabIndex={0}
             onClick={() => openSelection(0)}
-            onKeyDown={e => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                openSelection(0);
-              }
-            }}
-            title="Choose Pokémon A"
+            type="button"
           >
             <span className="compare-id">#???</span>
             <div className="compare-image-container">
@@ -530,7 +526,7 @@ export function Comparison() {
             <span className="compare-type-badge compare-empty-slot-badge">
               Tap to select
             </span>
-          </article>
+          </button>
         )}
 
         {/* VS Badge */}
@@ -538,41 +534,45 @@ export function Comparison() {
 
         {/* Right Pokemon / Empty Slot */}
         {rightPokemon ? (
-          <article
+          <button
             className="compare-panel"
             style={{ '--card-type-color': rightColor } as CSSProperties}
-            role="button"
-            tabIndex={0}
             onClick={() => openSelection(1)}
-            onKeyDown={e => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                openSelection(1);
-              }
-            }}
+            type="button"
           >
             <span className="compare-glow" aria-hidden="true" />
             <span className="compare-id">{formatPokemonId(rightPokemon.id)}</span>
-            <button
+            <div
               className="compare-remove"
               onClick={e => {
                 e.stopPropagation();
                 handleRemoveSlot(1);
               }}
+              onKeyDown={e => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleRemoveSlot(1);
+                }
+              }}
+              role="button"
+              tabIndex={0}
               aria-label={`Remove ${formatPokemonName(rightPokemon.name)} from comparison`}
               title="Remove from comparison"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
                 <line x1="18" y1="6" x2="6" y2="18" />
                 <line x1="6" y1="6" x2="18" y2="18" />
               </svg>
-            </button>
+            </div>
             <div className="compare-image-container">
               <img
                 className="compare-image"
                 src={rightPokemon.sprites.other?.['official-artwork']?.front_default ?? rightPokemon.sprites.front_default ?? ''}
                 alt={formatPokemonName(rightPokemon.name)}
                 decoding="async"
+                width="400"
+                height="400"
               />
             </div>
             <h2 className="compare-name">{formatPokemonName(rightPokemon.name)}</h2>
@@ -582,20 +582,12 @@ export function Comparison() {
             >
               {formatPokemonName(rightPokemon.types[0].type.name)}
             </span>
-          </article>
+          </button>
         ) : (
-          <article
+          <button
             className="compare-panel compare-panel--empty"
-            role="button"
-            tabIndex={0}
             onClick={() => openSelection(1)}
-            onKeyDown={e => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                openSelection(1);
-              }
-            }}
-            title="Choose Pokémon B"
+            type="button"
           >
             <span className="compare-id">#???</span>
             <div className="compare-image-container">
@@ -607,7 +599,7 @@ export function Comparison() {
             <span className="compare-type-badge compare-empty-slot-badge">
               Tap to select
             </span>
-          </article>
+          </button>
         )}
 
       </section>

@@ -8,6 +8,8 @@
   justify-content: center;
   width: 34px;
   height: 34px;
+  min-width: 44px;
+  min-height: 44px;
   border-radius: var(--hud-corner);
   color: var(--color-text-tertiary);
   background: rgba(0, 0, 0, 0.2);
@@ -19,6 +21,8 @@
               border-color var(--transition-fast),
               box-shadow var(--transition-fast);
   clip-path: polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px);
+  position: relative;
+  padding: 0;
 }
 
 .fav-btn:hover {

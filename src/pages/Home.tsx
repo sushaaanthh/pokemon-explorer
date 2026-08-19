@@ -62,10 +62,6 @@ export function Home() {
 
   const isMounted = useRef(true);
   const searchTimeoutRef = useRef<number | null>(null);
-  const allPokemonRef = useRef(allPokemon);
-  allPokemonRef.current = allPokemon;
-  const queryRef = useRef(query);
-  queryRef.current = query;
 
   useEffect(() => {
     isMounted.current = true;
@@ -73,6 +69,7 @@ export function Home() {
       isMounted.current = false;
       if (searchTimeoutRef.current) {
         clearTimeout(searchTimeoutRef.current);
+        searchTimeoutRef.current = null;
       }
     };
   }, []);
@@ -142,9 +139,7 @@ export function Home() {
     const trimmed = searchQuery.trim();
     if (!trimmed) {
       setMode('all');
-      if (allPokemonRef.current.length === 0) {
-        fetchAllInitialRef.current();
-      }
+      setAllPokemon(prev => prev.length === 0 ? [] : prev);
       return;
     }
 
@@ -165,16 +160,16 @@ export function Home() {
       if (isMounted.current) {
         setIsLoading(false);
         const url = new URL(window.location.href);
-        const currentQuery = queryRef.current;
-        if (currentQuery.trim()) {
-          url.searchParams.set('q', currentQuery.trim());
+        const currentQuery = query.trim();
+        if (currentQuery) {
+          url.searchParams.set('q', currentQuery);
         } else {
           url.searchParams.delete('q');
         }
         window.history.replaceState({}, document.title, url);
       }
     }
-  }, []);
+  }, [query]);
 
   // Load first page of 'all' on mount
   useEffect(() => {
@@ -185,25 +180,35 @@ export function Home() {
   useEffect(() => {
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
+      searchTimeoutRef.current = null;
     }
     if (query !== '') {
-      searchTimeoutRef.current = setTimeout(() => {
+      searchTimeoutRef.current = window.setTimeout(() => {
+        searchTimeoutRef.current = null;
         performSearch(query);
       }, 300);
     } else {
       setMode('all');
     }
+    // Cleanup timeout on unmount or when query changes
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+        searchTimeoutRef.current = null;
+      }
+    };
   }, [query, performSearch]);
 
   // Handle Type Filter clicks
   const handleTypeSelect = useCallback((type: PokemonTypeName | null) => {
     setSelectedType(type);
     setQuery('');
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+      searchTimeoutRef.current = null;
+    }
     if (type === null) {
       setMode('all');
-      if (allPokemonRef.current.length === 0) {
-        fetchAllInitialRef.current();
-      }
     } else {
       fetchTypeInitial(type);
     }
@@ -266,9 +271,7 @@ export function Home() {
     setQuery('');
     setSelectedType(null);
     setMode('all');
-    if (allPokemonRef.current.length === 0) {
-      fetchAllInitialRef.current();
-    }
+    setSearchPokemon([]);
   }, []);
 
   // Derived state: Total Count & hasMore
@@ -311,7 +314,7 @@ export function Home() {
   }, [mode, allPokemon, typePokemonDetailed, searchPokemon, sort]);
 
   return (
-    <main className="page">
+    <main className="page" id="main-content">
       <section className="hero">
         <div className="hero__copy">
           <p className="eyebrow">Your digital Pokédex</p>
@@ -324,11 +327,10 @@ export function Home() {
           </p>
           <SearchBar onSearch={setQuery} onClear={handleClearAllFilters} />
         </div>
-
           <div className="hero__feature">
             <div className="hero-pokeball">
               <span className="hero-pokeball__glow" aria-hidden="true" />
-              <img src={pokeballImage} alt="Poké Ball" className="hero-pokeball__image" decoding="async" fetchPriority="high" />
+              <img src={pokeballImage} alt="Poké Ball" className="hero-pokeball__image" decoding="async" fetchPriority="high" width="450" height="450" />
             </div>
           </div>
       </section>
@@ -361,7 +363,7 @@ export function Home() {
                 <ErrorState onRetry={handleInitialRetry} />
               )}
               <div className="state-action-center">
-                <button className="state__action" onClick={handleClearAllFilters}>
+                <button className="state__action" onClick={handleClearAllFilters} type="button">
                   Back to Pokédex
                 </button>
               </div>
@@ -372,7 +374,7 @@ export function Home() {
             <div className="browse-empty-container">
               <EmptyState title="No Pokémon found." text="Try adjusting your filters or search query." action={false} />
               <div className="state-action-center">
-                <button className="state__action" onClick={handleClearAllFilters}>
+                <button className="state__action" onClick={handleClearAllFilters} type="button">
                   Reset Filters
                 </button>
               </div>
@@ -401,14 +403,14 @@ export function Home() {
                 <p className="load-more-error__text">
                   Couldn't load more Pokémon.
                 </p>
-                <button className="state__action" onClick={handleLoadMoreRetry}>
+                <button className="state__action" onClick={handleLoadMoreRetry} type="button">
                   Retry
                 </button>
               </div>
             )}
 
             {!isLoadingMore && !loadMoreError && hasMore && (
-              <button className="load-more" onClick={loadMoreData}>
+              <button className="load-more" onClick={loadMoreData} type="button">
                 Load More
               </button>
             )}
@@ -418,4 +420,3 @@ export function Home() {
     </main>
   );
 }
-

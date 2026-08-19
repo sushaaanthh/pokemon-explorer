@@ -54,7 +54,7 @@
 .sort-select__input:focus-visible {
   outline: none;
   border-color: var(--color-accent);
-  box-shadow: var(--shadow-focus), 0 0 12px var(--hud-glow);
+  box-shadow: var(--shadow-focus), 0 0 14px var(--hud-glow);
 }
 
 .sort-select__chevron {
