@@ -475,28 +475,22 @@ export function Comparison() {
             }}
           >
             <span className="compare-glow" aria-hidden="true" />
-            <span className="compare-id">{formatPokemonId(leftPokemon.id)}</span>
-            <button
-              className="compare-remove"
-              onClick={e => {
-                e.stopPropagation();
-                handleRemoveSlot(0);
-              }}
-              aria-label={`Remove ${formatPokemonName(leftPokemon.name)} from comparison`}
-              title="Remove from comparison"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-            <button className="compare-replace" aria-label={`Replace ${formatPokemonName(leftPokemon.name)}`} title="Change Pokémon" onClick={() => openSelection(0)}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="1 4 1 10 7 10" />
-                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
-              </svg>
-            </button>
-            <div className="compare-image-container">
+              <span className="compare-id">{formatPokemonId(leftPokemon.id)}</span>
+              <button
+                className="compare-remove"
+                onClick={e => {
+                  e.stopPropagation();
+                  handleRemoveSlot(0);
+                }}
+                aria-label={`Remove ${formatPokemonName(leftPokemon.name)} from comparison`}
+                title="Remove from comparison"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+              <div className="compare-image-container">
               <img
                 className="compare-image"
                 src={leftPokemon.sprites.other?.['official-artwork']?.front_default ?? leftPokemon.sprites.front_default ?? ''}
@@ -571,12 +565,6 @@ export function Comparison() {
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18" />
                 <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-            <button className="compare-replace" aria-label={`Replace ${formatPokemonName(rightPokemon.name)}`} title="Change Pokémon" onClick={() => openSelection(1)}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="1 4 1 10 7 10" />
-                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
               </svg>
             </button>
             <div className="compare-image-container">
