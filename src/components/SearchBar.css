@@ -17,6 +17,7 @@
   box-shadow: var(--shadow-inner-glow), var(--shadow-card);
   transition: border-color var(--transition-base), transform var(--transition-fast), box-shadow var(--transition-base), background var(--transition-base);
   position: relative;
+  overflow: hidden;
 }
 
 .search-bar::before {
@@ -62,6 +63,9 @@
   color: var(--color-text-primary);
   font-size: 1rem;
   background: transparent;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .search-bar__input::placeholder {
@@ -139,17 +143,44 @@
 
 @media (max-width: 640px) {
   .search-bar {
-    gap: 12px;
-    min-height: 64px;
-    padding: 0 14px 0 16px;
+    gap: 10px;
+    min-height: 60px;
+    padding: 0 12px 0 14px;
   }
 
   .search-bar__input {
-    font-size: 0.95rem;
+    font-size: 0.92rem;
   }
 
   .search-bar__submit {
-    min-height: 44px;
-    padding: 0 14px;
+    min-height: 40px;
+    padding: 0 12px;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+  }
+}
+
+@media (max-width: 380px) {
+  .search-bar {
+    gap: 8px;
+    min-height: 52px;
+    padding: 0 10px 0 12px;
+  }
+
+  .search-bar__input {
+    font-size: 0.85rem;
+  }
+
+  .search-bar__submit {
+    min-height: 36px;
+    padding: 0 10px;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
+  }
+
+  .search-bar__clear {
+    padding: 0 6px;
+    font-size: 0.65rem;
   }
 }

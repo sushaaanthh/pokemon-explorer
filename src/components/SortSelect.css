@@ -32,6 +32,7 @@
   position: relative;
   display: inline-flex;
   align-items: center;
+  max-width: 100%;
 }
 
 .sort-select__input {
@@ -49,6 +50,7 @@
               background var(--transition-fast),
               box-shadow var(--transition-fast);
   clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
+  max-width: 100%;
 }
 
 .sort-select__input:hover {
@@ -75,4 +77,43 @@
 .sort-select__input option {
   background: var(--color-surface);
   color: var(--color-text-primary);
+}
+
+@media (max-width: 640px) {
+  .sort-select {
+    gap: var(--space-2);
+  }
+
+  .sort-select__label {
+    font-size: 0.7rem;
+  }
+
+  .sort-select__input {
+    padding: 6px 26px 6px 8px;
+    font-size: 0.75rem;
+  }
+
+  .sort-select__chevron {
+    right: 8px;
+  }
+}
+
+@media (max-width: 380px) {
+  .sort-select__label {
+    font-size: 0.65rem;
+  }
+
+  .sort-select__input {
+    padding: 5px 22px 5px 6px;
+    font-size: 0.7rem;
+  }
+
+  .sort-select__chevron {
+    right: 6px;
+  }
+
+  .sort-select__chevron svg {
+    width: 12px;
+    height: 12px;
+  }
 }

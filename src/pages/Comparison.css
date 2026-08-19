@@ -14,6 +14,83 @@
   .compare-page {
     padding: 20px 20px 64px;
   }
+
+  .compare-stage {
+    gap: 8px;
+  }
+
+  .compare-vs-badge {
+    width: 48px;
+    height: 48px;
+    font-size: 1.2rem;
+    clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+  }
+
+  .compare-panel {
+    padding: 14px;
+  }
+
+  .compare-image-container {
+    height: 160px;
+  }
+
+  .compare-id {
+    font-size: 2.5rem;
+  }
+
+  .compare-name {
+    font-size: 1.3rem;
+  }
+
+  .compare-type-badge {
+    font-size: 0.65rem;
+    padding: 3px 8px;
+  }
+
+  .compare-remove {
+    top: 10px;
+    right: 10px;
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 420px) {
+  .compare-stage {
+    gap: 6px;
+  }
+
+  .compare-vs-badge {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+    clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
+  }
+
+  .compare-panel {
+    padding: 10px;
+  }
+
+  .compare-image-container {
+    height: 140px;
+    margin-bottom: 12px;
+  }
+
+  .compare-id {
+    font-size: 2rem;
+    top: 10px;
+    left: 12px;
+  }
+
+  .compare-name {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+  }
+
+  .compare-type-badge {
+    font-size: 0.6rem;
+    padding: 2px 6px;
+  }
 }
 
 .compare-eyebrow {
@@ -98,15 +175,16 @@
 
 @media (max-width: 768px) {
   .compare-stage {
-    flex-direction: column;
-    align-items: center;
-    gap: 40px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 10px;
+    align-items: start;
   }
 
   .compare-panel {
-    width: 100%;
-    max-width: 360px;
-    padding: 24px;
+    width: auto;
+    max-width: none;
+    padding: 18px;
   }
 }
 

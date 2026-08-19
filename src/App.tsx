@@ -6,6 +6,7 @@ import { Home } from './pages/Home';
 import { Favorites } from './pages/Favorites';
 import { Comparison } from './pages/Comparison';
 import { PokemonDetails } from './pages/PokemonDetails';
+import { NotFound } from './pages/NotFound';
 import { VaultTransitionProvider } from './components/VaultTransitionContext';
 import { AppStateProvider, useAppState } from './context/AppStateContext';
 
@@ -35,6 +36,7 @@ function AppShell() {
         <Route path="/favorites" element={<Favorites />} />
         <Route path="/compare" element={<Comparison />} />
         <Route path="/pokemon/:name" element={<PokemonDetails />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <GlobalComparisonNotice />
     </VaultTransitionProvider>
