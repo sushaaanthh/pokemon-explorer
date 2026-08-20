@@ -67,10 +67,10 @@ export function Navigation({ theme, onToggleTheme }: NavigationProps) {
   return (
     <nav className="nav" role="navigation" aria-label="Main navigation">
       <div className="nav__inner container">
-        <VaultLink to="/" className="nav__brand" aria-label="Pokémon Explorer Home">
+        <a href="/" className="nav__brand" aria-label="Pokémon Explorer Home" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
           <img className="nav__brand-icon" src={logo} alt="" width="32" height="32" />
           <span className="nav__brand-text">Pokémon Explorer</span>
-        </VaultLink>
+        </a>
 
         <div
           ref={mobileMenuRef}
