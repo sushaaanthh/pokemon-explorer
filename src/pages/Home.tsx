@@ -426,12 +426,6 @@ export function Home() {
           <p className="hero__text">
             Explore Pokémon, inspect their stats, filter by type, and build your own collection.
           </p>
-          <SearchBar
-            onSearch={setQuery}
-            onClear={handleClearAllFilters}
-            suggestions={suggestions}
-            onSuggestionSelect={handleSuggestionSelect}
-          />
         </div>
           <div className="hero__feature">
               <div className="hero-pokeball">
@@ -448,10 +442,18 @@ export function Home() {
             <p className="eyebrow">Explore the Pokédex</p>
             <h2>Discover Pokémon</h2>
           </div>
-          <div className="browse__controls">
-            <span>{totalCount.toLocaleString()} results</span>
-            <SortSelect value={sort} onChange={setSort} />
-          </div>
+        </div>
+        <div className="browse__search">
+          <SearchBar
+            onSearch={setQuery}
+            onClear={handleClearAllFilters}
+            suggestions={suggestions}
+            onSuggestionSelect={handleSuggestionSelect}
+          />
+        </div>
+        <div className="browse__controls">
+          <span>{totalCount.toLocaleString()} results</span>
+          <SortSelect value={sort} onChange={setSort} />
         </div>
         <TypeFilter selected={selectedType} onSelect={handleTypeSelect} />
         
