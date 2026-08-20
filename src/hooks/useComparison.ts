@@ -31,6 +31,7 @@ const MAX_COMPARISON = 2;
 export function useComparison() {
   const [comparison, setComparison] = useState<number[]>(getStoredComparison);
   const [notice, setNotice] = useState<string | null>(null);
+  const clearNotice = useCallback(() => setNotice(null), []);
 
   useEffect(() => {
     try {
@@ -113,5 +114,6 @@ export function useComparison() {
     isFull: comparison.length >= MAX_COMPARISON,
     MAX_COMPARISON,
     notice,
+    clearNotice,
   };
 }

@@ -8,19 +8,8 @@ import { Comparison } from './pages/Comparison';
 import { PokemonDetails } from './pages/PokemonDetails';
 import { NotFound } from './pages/NotFound';
 import { VaultTransitionProvider } from './components/VaultTransitionContext';
-import { AppStateProvider, useAppState } from './context/AppStateContext';
-
-function GlobalComparisonNotice() {
-  const { comparisonNotice } = useAppState();
-
-  if (!comparisonNotice) return null;
-
-  return (
-    <div className="global-notice" role="status" aria-live="polite">
-      {comparisonNotice}
-    </div>
-  );
-}
+import { AppStateProvider } from './context/AppStateContext';
+import { ComparisonFullModal } from './components/ComparisonFullModal';
 
 function AppShell() {
   const { theme, toggleTheme } = useTheme();
@@ -39,7 +28,7 @@ function AppShell() {
         <Route path="/pokemon/:name" element={<PokemonDetails />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-      <GlobalComparisonNotice />
+      <ComparisonFullModal />
     </VaultTransitionProvider>
   );
 }

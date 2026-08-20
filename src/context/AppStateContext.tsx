@@ -19,6 +19,7 @@ interface AppStateContextType {
   comparisonIsFull: boolean;
   comparisonMax: number;
   comparisonNotice: string | null;
+  clearComparisonNotice: () => void;
 }
 
 const AppStateContext = createContext<AppStateContextType | null>(null);
@@ -51,6 +52,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     comparisonIsFull: comparisonHook.isFull,
     comparisonMax: comparisonHook.MAX_COMPARISON,
     comparisonNotice: comparisonHook.notice,
+    clearComparisonNotice: comparisonHook.clearNotice,
   };
 
   return (
