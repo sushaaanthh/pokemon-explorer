@@ -29,30 +29,71 @@ export function VaultTransitionProvider({ children }: { children: ReactNode }) {
   const location = useLocation();
   const initialized = useRef(false);
   const pendingNav = useRef<string | null>(null);
+  const doorAudioRef = useRef<HTMLAudioElement | null>(null);
+  const soundPlayingRef = useRef(false);
+  const initialTransitionDone = useRef(false);
 
   useEffect(() => {
     if (initialized.current) return;
     initialized.current = true;
-    
+
+    doorAudioRef.current = new Audio('/assets/vault/door-sound.mpeg');
+
+    return () => {
+      if (doorAudioRef.current) {
+        doorAudioRef.current.pause();
+        doorAudioRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (initialTransitionDone.current) return;
+    initialTransitionDone.current = true;
+
     // Initial opening sequence
     setTimeout(() => {
       setVaultState('opening');
     }, 500); // 500ms hold on start
 
-    // Deliberately not clearing timeout on unmount to ensure 
+    // Deliberately not clearing timeout on unmount to ensure
     // StrictMode double-invocations don't permanently break the initialization
+  }, []);
+
+  const playVaultSound = useCallback(() => {
+    if (!doorAudioRef.current || soundPlayingRef.current) return;
+
+    soundPlayingRef.current = true;
+    const audio = doorAudioRef.current;
+    audio.currentTime = 0;
+
+    const onEnded = () => {
+      soundPlayingRef.current = false;
+      audio.removeEventListener('ended', onEnded);
+    };
+
+    audio.addEventListener('ended', onEnded);
+
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        soundPlayingRef.current = false;
+        audio.removeEventListener('ended', onEnded);
+      });
+    }
   }, []);
 
   const navigateWithVault = useCallback((to: string) => {
     if (vaultState !== 'idle') return; // block duplicate navigations
-    
+
     // Check if it's the exact same route
-    if (location.pathname === to) return; 
+    if (location.pathname === to) return;
 
     pendingNav.current = to;
     // Start transition
     setVaultState('closing');
-  }, [vaultState, location.pathname]);
+    playVaultSound();
+  }, [vaultState, location.pathname, playVaultSound]);
 
   const handleTransitionEnd = (e: React.TransitionEvent<HTMLImageElement>) => {
     // Only react to the primary transition property
