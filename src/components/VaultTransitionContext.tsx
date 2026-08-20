@@ -30,6 +30,7 @@ export function VaultTransitionProvider({ children }: { children: ReactNode }) {
   const pendingNav = useRef<string | null>(null);
   const openTimeoutRef = useRef<number | null>(null);
   const safetyTimeoutRef = useRef<number | null>(null);
+  const initialOpenDone = useRef(false);
   const { playVault } = useAudioSystem();
 
   const vaultStateRef = useRef(vaultState);
@@ -50,9 +51,13 @@ export function VaultTransitionProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     void window.setTimeout(() => {
+      if (!initialOpenDone.current) {
+        initialOpenDone.current = true;
+        playVault();
+      }
       setVaultState('opening');
     }, 500);
-  }, []);
+  }, [playVault]);
 
   useEffect(() => {
     if (vaultState === 'idle') return;
