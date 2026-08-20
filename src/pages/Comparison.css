@@ -27,11 +27,91 @@
     max-width: none;
     padding: 18px;
   }
+
+  .compare-page {
+    padding: 24px 20px 80px;
+  }
+
+  .compare-eyebrow {
+    margin-bottom: 8px;
+    font-size: 0.7rem;
+  }
+
+  .compare-title {
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    margin-bottom: 24px;
+  }
+
+  .compare-selection {
+    max-width: 100%;
+  }
+
+  .compare-selection__search {
+    max-width: 100%;
+    margin-bottom: 20px;
+  }
+
+  .compare-selection__filters {
+    margin-bottom: 20px;
+  }
+
+  .compare-selection__state {
+    max-width: 100%;
+  }
+
+  .compare-selection__load-more {
+    margin-top: 24px;
+  }
+
+  .compare-selection .pokemon-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .compare-selection .pokemon-card {
+    min-height: auto;
+    padding: 16px;
+  }
+
+  .compare-selection .pokemon-card__artwork-wrap {
+    height: auto;
+    min-height: 140px;
+  }
+
+  .compare-selection .pokemon-card__bg-id {
+    font-size: 4rem;
+    right: -4px;
+    top: -20px;
+  }
+
+  .compare-selection__popover {
+    width: calc(100% - 32px);
+    max-width: 420px;
+    justify-content: center;
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 @media (max-width: 640px) {
   .compare-page {
-    padding: 20px 20px 64px;
+    padding: 20px 16px 72px;
+  }
+
+  .compare-title {
+    font-size: clamp(1.6rem, 5.5vw, 2.2rem);
+    margin-bottom: 20px;
+  }
+
+  .compare-selection__search {
+    margin-bottom: 16px;
+  }
+
+  .compare-selection__filters {
+    margin-bottom: 16px;
+  }
+
+  .compare-selection__load-more {
+    margin-top: 20px;
   }
 
   .compare-stage {
@@ -72,9 +152,65 @@
     width: 28px;
     height: 28px;
   }
+
+  .compare-selection__popover {
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    padding: 10px 16px;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .compare-page {
+    padding: 16px 12px 68px;
+  }
+
+  .compare-title {
+    font-size: clamp(1.5rem, 7vw, 1.9rem);
+    margin-bottom: 16px;
+  }
+
+  .compare-selection__search {
+    margin-bottom: 12px;
+  }
+
+  .compare-selection__filters {
+    margin-bottom: 12px;
+  }
+
+  .compare-selection__load-more {
+    margin-top: 16px;
+  }
 }
 
 @media (max-width: 420px) {
+  .compare-page {
+    padding: 16px 12px 64px;
+  }
+
+  .compare-title {
+    font-size: clamp(1.5rem, 7vw, 1.9rem);
+    margin-bottom: 16px;
+  }
+
+  .compare-selection__search {
+    margin-bottom: 12px;
+  }
+
+  .compare-selection__filters {
+    margin-bottom: 12px;
+  }
+
+  .compare-selection__load-more {
+    margin-top: 16px;
+  }
+
+  .compare-selection__popover {
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    padding: 8px 12px;
+    gap: 6px;
+  }
+
   .compare-stage {
     gap: 6px;
   }
