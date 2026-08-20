@@ -22,6 +22,7 @@ export function Navigation({ theme, onToggleTheme }: NavigationProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { favoritesCount, comparisonCount } = useAppState();
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const hamburgerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (mobileOpen) {
@@ -29,6 +30,7 @@ export function Navigation({ theme, onToggleTheme }: NavigationProps) {
       mobileMenuRef.current?.focus();
     } else {
       document.body.style.overflow = '';
+      hamburgerRef.current?.focus();
     }
     return () => {
       document.body.style.overflow = '';
@@ -108,6 +110,7 @@ export function Navigation({ theme, onToggleTheme }: NavigationProps) {
           </VaultLink>
 
           <button
+            ref={hamburgerRef}
             className={`nav__hamburger ${mobileOpen ? 'nav__hamburger--open' : ''}`}
             onClick={() => setMobileOpen(prev => !prev)}
             aria-label="Toggle navigation menu"

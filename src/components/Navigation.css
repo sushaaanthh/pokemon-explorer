@@ -3,7 +3,7 @@
   top: 0;
   z-index: 100;
   height: 76px;
-  background: color-mix(in srgb, var(--color-background) 88%, #111 12%);
+  background: color-mix(in srgb, var(--color-background) 88%, var(--color-surface-secondary) 12%);
   border-bottom: 1px solid var(--hud-border);
   box-shadow: inset 0 -1px 0 rgba(230,57,70,0.06);
   backdrop-filter: blur(12px) saturate(140%);
@@ -196,7 +196,7 @@
     align-items: stretch;
     justify-content: flex-start;
     padding: 16px;
-    background: color-mix(in srgb, var(--color-background) 95%, #111 5%);
+    background: color-mix(in srgb, var(--color-background) 95%, var(--color-surface-secondary) 5%);
     border-bottom: 1px solid var(--color-border);
     transform: translateY(-120%);
     opacity: 0;

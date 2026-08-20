@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useAudioSystem } from '../hooks/useAudioSystem';
 import './CompareButton.css';
 
 interface CompareButtonProps {
@@ -9,6 +10,7 @@ interface CompareButtonProps {
 
 export function CompareButton({ isSelected, disabled = false, onToggle }: CompareButtonProps) {
   const [animating, setAnimating] = useState(false);
+  const { play } = useAudioSystem();
 
   useEffect(() => {
     if (isSelected) {
@@ -24,6 +26,7 @@ export function CompareButton({ isSelected, disabled = false, onToggle }: Compar
       onClick={e => {
         e.preventDefault();
         e.stopPropagation();
+        play('compare');
         onToggle();
       }}
       disabled={disabled}

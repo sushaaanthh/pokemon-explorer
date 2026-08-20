@@ -580,6 +580,18 @@
 .compare-stat-bar--higher {
   box-shadow: 0 0 8px var(--hud-glow-strong);
   z-index: 1;
+  animation: winner-bar-pulse 2s ease-in-out infinite;
+}
+
+@keyframes winner-bar-pulse {
+  0%, 100% { box-shadow: 0 0 8px var(--hud-glow-strong); }
+  50% { box-shadow: 0 0 14px var(--hud-glow-strong), 0 0 20px var(--hud-glow); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .compare-stat-bar--higher {
+    animation: none;
+  }
 }
 
 .compare-stat-bar-wrapper {

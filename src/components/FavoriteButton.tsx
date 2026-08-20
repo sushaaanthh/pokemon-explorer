@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useAudioSystem } from '../hooks/useAudioSystem';
 import './FavoriteButton.css';
 
 interface FavoriteButtonProps {
@@ -9,6 +10,7 @@ interface FavoriteButtonProps {
 
 export function FavoriteButton({ isFavorite, onToggle, size = 20 }: FavoriteButtonProps) {
   const [animating, setAnimating] = useState(false);
+  const { play } = useAudioSystem();
 
   useEffect(() => {
     if (isFavorite) {
@@ -24,6 +26,7 @@ export function FavoriteButton({ isFavorite, onToggle, size = 20 }: FavoriteButt
       onClick={e => {
         e.preventDefault();
         e.stopPropagation();
+        play('favorite');
         onToggle();
       }}
       aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}

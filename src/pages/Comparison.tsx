@@ -613,7 +613,7 @@ export function Comparison() {
           <h2 className="compare-section-heading">Statistics</h2>
 
           <div className="compare-stats-list">
-            {COMPARE_STATS.map((stat) => {
+            {COMPARE_STATS.map((stat, index) => {
               const leftVal = leftPokemon.stats.find((s) => s.stat.name === stat)?.base_stat ?? 0;
               const rightVal = rightPokemon.stats.find((s) => s.stat.name === stat)?.base_stat ?? 0;
               const maxStat = 255;
@@ -638,6 +638,8 @@ export function Comparison() {
                 rightClass += ' compare-stat-value--equal';
               }
 
+              const delay = `${index * 0.08}s`;
+
                return (
                  <div className="compare-stat-row" key={stat}>
                    <p className="compare-stat-name">
@@ -648,20 +650,20 @@ export function Comparison() {
                      <div className="compare-stat-bar-wrapper">
                        <div
                          className={leftBarClass}
-                         style={{ width: `${leftPct}%`, backgroundColor: leftColor }}
+                         style={{ width: `${leftPct}%`, backgroundColor: leftColor, transitionDelay: delay }}
                        />
                        <div
                          className={rightBarClass}
-                         style={{ width: `${rightPct}%`, backgroundColor: rightColor }}
+                         style={{ width: `${rightPct}%`, backgroundColor: rightColor, transitionDelay: delay }}
                        />
                      </div>
                      <span className={rightClass}>{rightVal}</span>
                    </div>
                  </div>
                );
-            })}
-          </div>
-        </section>
+             })}
+           </div>
+         </section>
       ) : (
         <section className="compare-stats-section compare-stats-awaiting">
           <p className="compare-section-title">Awaiting Contenders</p>

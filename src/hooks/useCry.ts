@@ -1,17 +1,37 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
-let currentAudio: HTMLAudioElement | null = null;
+let activeAudio: { audio: HTMLAudioElement; setIsPlaying: (v: boolean) => void } | null = null;
 
 export function stopCurrentCry() {
-  if (currentAudio) {
-    currentAudio.pause();
-    currentAudio.currentTime = 0;
-    currentAudio = null;
+  if (activeAudio) {
+    activeAudio.audio.pause();
+    activeAudio.audio.currentTime = 0;
+    activeAudio.setIsPlaying(false);
+    activeAudio = null;
   }
 }
 
 export function useCry() {
   const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      if (activeAudio && activeAudio.setIsPlaying === setIsPlaying) {
+        activeAudio.audio.pause();
+        activeAudio.audio.currentTime = 0;
+        activeAudio = null;
+      }
+    };
+  }, [setIsPlaying]);
+
+  const stop = useCallback(() => {
+    if (activeAudio && activeAudio.setIsPlaying === setIsPlaying) {
+      activeAudio.audio.pause();
+      activeAudio.audio.currentTime = 0;
+      activeAudio = null;
+    }
+    setIsPlaying(false);
+  }, [setIsPlaying]);
 
   const play = useCallback((url: string) => {
     stopCurrentCry();
@@ -19,35 +39,30 @@ export function useCry() {
     if (!url) return;
 
     const audio = new Audio(url);
-    currentAudio = audio;
     setIsPlaying(true);
 
+    const endCry = () => {
+      audio.removeEventListener('ended', endCry);
+      audio.removeEventListener('error', endCry);
+      if (activeAudio && activeAudio.audio === audio) {
+        activeAudio = null;
+      }
+      setIsPlaying(false);
+    };
+
+    activeAudio = { audio, setIsPlaying };
+
+    audio.addEventListener('ended', endCry);
+    audio.addEventListener('error', endCry);
+
     audio.play().catch(() => {
+      audio.removeEventListener('ended', endCry);
+      audio.removeEventListener('error', endCry);
+      if (activeAudio && activeAudio.audio === audio) {
+        activeAudio = null;
+      }
       setIsPlaying(false);
-      currentAudio = null;
     });
-
-    const onEnded = () => {
-      setIsPlaying(false);
-      currentAudio = null;
-      audio.removeEventListener('ended', onEnded);
-      audio.removeEventListener('error', onError);
-    };
-
-    const onError = () => {
-      setIsPlaying(false);
-      currentAudio = null;
-      audio.removeEventListener('ended', onEnded);
-      audio.removeEventListener('error', onError);
-    };
-
-    audio.addEventListener('ended', onEnded);
-    audio.addEventListener('error', onError);
-  }, []);
-
-  const stop = useCallback(() => {
-    stopCurrentCry();
-    setIsPlaying(false);
   }, []);
 
   return { play, stop, isPlaying };

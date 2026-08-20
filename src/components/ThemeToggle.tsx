@@ -1,3 +1,4 @@
+import { useAudioSystem } from '../hooks/useAudioSystem';
 import './ThemeToggle.css';
 
 interface ThemeToggleProps {
@@ -7,11 +8,15 @@ interface ThemeToggleProps {
 
 export function ThemeToggle({ theme, onToggle }: ThemeToggleProps) {
   const isDark = theme === 'dark';
+  const { play } = useAudioSystem();
 
   return (
     <button
       className="theme-toggle"
-      onClick={onToggle}
+      onClick={() => {
+        play('confirm');
+        onToggle();
+      }}
       aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
       title={`Switch to ${isDark ? 'light' : 'dark'} mode`}
     >
