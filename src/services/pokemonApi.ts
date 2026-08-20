@@ -1,6 +1,7 @@
 import type { Pokemon, PokemonListResponse } from '../types/pokemon';
 
 const API_BASE = 'https://pokeapi.co/api/v2';
+const CRY_BASE = 'https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest';
 
 const pokemonCache: Record<string, Pokemon> = {};
 const inFlightRequests: Record<string, Promise<Pokemon> | undefined> = {};
@@ -11,6 +12,13 @@ async function fetchJson<T>(url: string): Promise<T> {
     throw new Error(`API error: ${response.status} ${response.statusText}`);
   }
   return response.json() as Promise<T>;
+}
+
+function withCryUrl(pokemon: Pokemon): Pokemon {
+  return {
+    ...pokemon,
+    cryUrl: `${CRY_BASE}/${pokemon.id}.ogg`,
+  };
 }
 
 export async function getPokemonList(
@@ -34,9 +42,10 @@ export async function getPokemon(nameOrId: string | number): Promise<Pokemon> {
 
   const promise: Promise<Pokemon> = fetchJson<Pokemon>(`${API_BASE}/pokemon/${nameOrId}`).then(pokemon => {
     delete inFlightRequests[cacheKey];
-    pokemonCache[pokemon.name.toLowerCase()] = pokemon;
-    pokemonCache[pokemon.id.toString()] = pokemon;
-    return pokemon;
+    const enriched = withCryUrl(pokemon);
+    pokemonCache[pokemon.name.toLowerCase()] = enriched;
+    pokemonCache[pokemon.id.toString()] = enriched;
+    return enriched;
   }).catch(err => {
     delete inFlightRequests[cacheKey];
     throw err;

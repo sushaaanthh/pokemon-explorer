@@ -6,7 +6,9 @@ import { formatPokemonId } from '../utils/formatPokemonId';
 import { formatPokemonName } from '../utils/formatPokemonName';
 import { FavoriteButton } from './FavoriteButton';
 import { CompareButton } from './CompareButton';
+import { CryButton } from './CryButton';
 import { useAppState } from '../context/AppStateContext';
+import { useInView } from '../hooks/useInView';
 import './PokemonCard.css';
 
 interface PokemonCardProps {
@@ -31,6 +33,7 @@ export const PokemonCard = memo(function PokemonCard({ pokemon, onSelect, linkSt
   const typeColor = getTypeColor(primaryType);
   const artwork = getArtwork(pokemon);
   const hpStat = pokemon.stats.find(s => s.stat.name === 'hp');
+  const { ref, isInView } = useInView();
 
   const favorite = isFavorite(pokemon.id);
   const compareSelected = isCompareSelected(pokemon.id);
@@ -46,16 +49,22 @@ export const PokemonCard = memo(function PokemonCard({ pokemon, onSelect, linkSt
 
   return (
     <Link
+      ref={ref as any}
       to={`/pokemon/${pokemon.name}`}
       state={linkState}
-      className="pokemon-card"
+      className={`pokemon-card ${isInView ? 'pokemon-card--visible' : ''} ${favorite ? 'pokemon-card--favorite' : ''} ${compareSelected ? 'pokemon-card--compare' : ''}`}
       style={{ '--card-type-color': typeColor } as React.CSSProperties}
+      data-cry-url={pokemon.cryUrl ?? undefined}
     >
       <span className="pokemon-card__bg-id">{formatPokemonId(pokemon.id)}</span>
+      <span className="pokemon-card__type-bar" aria-hidden="true" />
 
       <div className="pokemon-card__top">
         <span className="pokemon-card__id">{formatPokemonId(pokemon.id)}</span>
-        <FavoriteButton isFavorite={favorite} onToggle={() => toggleFavorite(pokemon.id)} />
+        <div className="pokemon-card__actions">
+          <CryButton cryUrl={pokemon.cryUrl} />
+          <FavoriteButton isFavorite={favorite} onToggle={() => toggleFavorite(pokemon.id)} />
+        </div>
       </div>
 
       <div className="pokemon-card__artwork-wrap">

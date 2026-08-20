@@ -149,10 +149,6 @@
   transform: translateY(0) scale(0.97);
 }
 
-.detail-nav__btn--prev {
-  margin-right: auto;
-}
-
 .detail-nav__btn--next {
   margin-left: auto;
 }
@@ -343,8 +339,10 @@
 /* ---- Type Badges ---- */
 .detail-types {
   display: flex;
+  align-items: center;
   gap: 12px;
   margin-bottom: 40px;
+  flex-wrap: wrap;
 }
 
 .detail-type-badge {
@@ -355,6 +353,14 @@
   font-weight: var(--fw-bold);
   text-transform: uppercase;
   letter-spacing: 0.08em;
+}
+
+.detail-types .cry-btn {
+  width: 36px;
+  height: 36px;
+  min-width: 44px;
+  min-height: 44px;
+  margin-left: 4px;
 }
 
 /* ---- Meta Grid (Height / Weight / Abilities) ---- */

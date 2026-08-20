@@ -8,6 +8,7 @@ import { formatPokemonName } from '../utils/formatPokemonName';
 import { ErrorState } from '../components/ErrorState';
 import { FavoriteButton } from '../components/FavoriteButton';
 import { CompareButton } from '../components/CompareButton';
+import { CryButton } from '../components/CryButton';
 import { createFallbackArt } from '../components/FeaturedPokemon';
 import { useAppState } from '../context/AppStateContext';
 import './pages.css';
@@ -193,11 +194,6 @@ export function PokemonDetails() {
       </Link>
 
       <nav className="detail-nav" aria-label="Pokémon navigation">
-        {pokemon.id > 1 && (
-          <Link to={`/pokemon/${pokemon.id - 1}`} className="detail-nav__btn detail-nav__btn--prev">
-            ← Prev
-          </Link>
-        )}
         <Link to={`/pokemon/${pokemon.id + 1}`} className="detail-nav__btn detail-nav__btn--next">
           Next →
         </Link>
@@ -238,6 +234,7 @@ export function PokemonDetails() {
                 {formatPokemonName(t.type.name)}
               </span>
             ))}
+            <CryButton cryUrl={pokemon.cryUrl} size={20} />
           </div>
 
           <div className="detail-actions">

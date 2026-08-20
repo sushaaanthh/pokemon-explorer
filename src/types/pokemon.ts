@@ -53,6 +53,7 @@ export interface Pokemon {
   abilities: PokemonAbility[];
   moves: PokemonMove[];
   sprites: PokemonSprites;
+  cryUrl?: string;
 }
 
 export interface PokemonListItem {

@@ -1,0 +1,140 @@
+/* ===================================================
+   CRY BUTTON — HUD Edition
+   =================================================== */
+
+.cry-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: var(--hud-corner);
+  color: var(--color-text-tertiary);
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4px);
+  border: 1px solid var(--hud-border-subtle);
+  transition:
+    color var(--transition-fast),
+    transform var(--transition-spring),
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+  clip-path: polygon(3px 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%, 0 3px);
+  position: relative;
+  padding: 0;
+  cursor: pointer;
+}
+
+.cry-btn:hover:not(.cry-btn--playing) {
+  color: var(--color-accent);
+  background: rgba(0, 0, 0, 0.3);
+  border-color: var(--hud-border);
+  box-shadow: 0 0 12px var(--hud-glow);
+  transform: scale(1.1);
+}
+
+.cry-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus), 0 0 12px var(--hud-glow);
+}
+
+.cry-btn:active:not(.cry-btn--playing) {
+  transform: scale(0.92);
+}
+
+.cry-btn--playing {
+  color: var(--card-type-color);
+  border-color: var(--card-type-color);
+  background: color-mix(in srgb, var(--card-type-color) 12%, transparent);
+  box-shadow: 0 0 16px var(--hud-glow-strong);
+  animation: cry-pulse 1.2s ease-in-out infinite;
+}
+
+.cry-btn--stopped {
+  animation: none;
+}
+
+.cry-btn__icon {
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.cry-btn__icon--wave {
+  animation: cry-icon-wave 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes cry-icon-wave {
+  from { opacity: 0.7; }
+  to { opacity: 1; }
+}
+
+.cry-btn__wave {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  pointer-events: none;
+}
+
+.cry-btn__wave span {
+  display: block;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--card-type-color);
+  opacity: 0.7;
+  animation: cry-wave-bar 0.8s ease-in-out infinite;
+}
+
+.cry-btn__wave span:nth-child(1) {
+  height: 10px;
+  animation-delay: 0s;
+}
+
+.cry-btn__wave span:nth-child(2) {
+  height: 16px;
+  animation-delay: 0.15s;
+}
+
+.cry-btn__wave span:nth-child(3) {
+  height: 10px;
+  animation-delay: 0.3s;
+}
+
+@keyframes cry-wave-bar {
+  0%, 100% { transform: scaleY(0.6); opacity: 0.5; }
+  50% { transform: scaleY(1.4); opacity: 0.9; }
+}
+
+@keyframes cry-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cry-btn--playing {
+    animation: none;
+  }
+
+  .cry-btn__icon--wave {
+    animation: none;
+  }
+
+  .cry-btn__wave span {
+    animation: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .cry-btn {
+    width: 30px;
+    height: 30px;
+    min-width: 40px;
+    min-height: 40px;
+  }
+}
