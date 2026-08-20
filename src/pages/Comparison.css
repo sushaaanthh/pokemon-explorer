@@ -455,11 +455,20 @@
 }
 
 .compare-section-title {
+  color: var(--color-accent);
+  font-size: 0.75rem;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  text-align: center;
+  width: 100%;
+}
 
 .compare-section-heading {
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-size: clamp(2.2rem, 4vw, 3rem);
   text-transform: uppercase;
   margin-bottom: 48px;
   text-align: center;

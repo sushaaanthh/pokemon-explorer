@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAppState } from '../context/AppStateContext';
-import { useVaultNavigation } from '../components/VaultTransitionContext';
 import './ComparisonFullModal.css';
 
 export function ComparisonFullModal() {
   const { comparisonNotice, clearComparisonNotice } = useAppState();
-  const { navigateWithVault } = useVaultNavigation();
+  const navigate = useNavigate();
   const [isVisible, setIsVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
@@ -35,10 +35,8 @@ export function ComparisonFullModal() {
   const handleGoToComparisons = useCallback(() => {
     clearComparisonNotice();
     handleClose();
-    setTimeout(() => {
-      navigateWithVault('/compare');
-    }, 150);
-  }, [clearComparisonNotice, handleClose, navigateWithVault]);
+    navigate('/compare');
+  }, [clearComparisonNotice, handleClose, navigate]);
 
   const handleBackdropClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
