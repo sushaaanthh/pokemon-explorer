@@ -97,7 +97,8 @@ export function useAudioSystem(): AudioSystemState {
     try {
       const audio = new Audio('/assets/vault/door-sound.mpeg');
       currentVaultAudio = audio;
-      audio.currentTime = 0.5;
+      audio.currentTime = 0.75;
+      audio.playbackRate = 1.75;
       const onEnded = () => {
         vaultPlaying = false;
         currentVaultAudio = null;
@@ -124,7 +125,8 @@ export function useAudioSystem(): AudioSystemState {
   const stopAll = useCallback(() => {
     if (currentVaultAudio) {
       currentVaultAudio.pause();
-      currentVaultAudio.currentTime = 0;
+      currentVaultAudio.currentTime = 0.75;
+      currentVaultAudio.playbackRate = 1.75;
       currentVaultAudio = null;
     }
     vaultPlaying = false;
