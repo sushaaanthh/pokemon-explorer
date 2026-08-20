@@ -198,36 +198,30 @@ export function SearchBar({ onSearch, onClear, suggestions = [], onSuggestionSel
         </span>
       </form>
 
-      {showDropdown && (
+      {showDropdown && suggestions.length > 0 && (
         <ul
           id="search-suggestions"
           className="search-bar__suggestions"
           role="listbox"
           aria-label="Pokémon suggestions"
         >
-          {suggestions.length > 0 ? (
-            suggestions.map((name, index) => (
-              <li
-                key={name}
-                id={`search-suggestion-${index}`}
-                ref={el => { itemRefs.current[index] = el!; }}
-                className={`search-bar__suggestion${index === highlightedIndex ? ' search-bar__suggestion--highlighted' : ''}`}
-                role="option"
-                aria-selected={index === highlightedIndex}
-                onMouseDown={e => {
-                  e.preventDefault();
-                  handleSelect(name);
-                }}
-                onMouseEnter={() => setHighlightedIndex(index)}
-              >
-                <span className="search-bar__suggestion-name">{name}</span>
-              </li>
-            ))
-          ) : (
-            <li className="search-bar__suggestion--empty" role="option" aria-disabled="true">
-              No Pokémon found
+          {suggestions.map((name, index) => (
+            <li
+              key={name}
+              id={`search-suggestion-${index}`}
+              ref={el => { itemRefs.current[index] = el!; }}
+              className={`search-bar__suggestion${index === highlightedIndex ? ' search-bar__suggestion--highlighted' : ''}`}
+              role="option"
+              aria-selected={index === highlightedIndex}
+              onMouseDown={e => {
+                e.preventDefault();
+                handleSelect(name);
+              }}
+              onMouseEnter={() => setHighlightedIndex(index)}
+            >
+              <span className="search-bar__suggestion-name">{name}</span>
             </li>
-          )}
+          ))}
         </ul>
       )}
     </div>

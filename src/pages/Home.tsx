@@ -183,39 +183,41 @@ export function Home() {
     setSelectedType(null);
 
     try {
-      const searchParam = isNaN(Number(trimmed)) ? trimmed.toLowerCase() : Number(trimmed);
+      const isNumericQuery = /^\d+$/.test(trimmed);
+      const lowerQuery = trimmed.toLowerCase();
+      let matchedNames: string[] = [];
 
-      // Try partial/substring match against locally cached Pokémon first
-      const lowerQuery = typeof searchParam === 'string' ? searchParam.toLowerCase() : String(searchParam);
-      const isNumericQuery = typeof searchParam === 'number' || /^\d+$/.test(trimmed);
-
-      if (!isNumericQuery && allNames.length > 0) {
-        const matchedName = allNames.find(
-          name => name.startsWith(lowerQuery) || name.includes(lowerQuery)
-        );
-        if (matchedName) {
-          const result = await getPokemon(matchedName);
-          if (!isMounted.current) return;
-          setSearchPokemon([result]);
-          setMode('search');
-          setIsLoading(false);
-          const url = new URL(window.location.href);
-          const currentQuery = trimmed;
-          if (currentQuery) {
-            url.searchParams.set('q', currentQuery);
-          } else {
-            url.searchParams.delete('q');
+      if (!isNumericQuery) {
+        let names = allNames;
+        if (names.length === 0) {
+          try {
+            names = await getAllPokemonNames();
+            if (!isMounted.current) return;
+            setAllNames(names);
+          } catch {
+            names = [];
           }
-          window.history.replaceState({}, document.title, url);
-          return;
+        }
+
+        if (names.length > 0) {
+          matchedNames = names.filter(
+            name => name.startsWith(lowerQuery) || name.includes(lowerQuery)
+          );
         }
       }
 
-      // Fallback to exact lookup via API (supports full names and IDs)
-      const result = await getPokemon(searchParam);
-
-      setSearchPokemon([result]);
-      setMode('search');
+      if (matchedNames.length > 0) {
+        const limitedNames = matchedNames.slice(0, 100);
+        const results = await getPokemonDetailsBatch(limitedNames);
+        if (!isMounted.current) return;
+        setSearchPokemon(results);
+        setMode('search');
+      } else {
+        const result = await getPokemon(isNumericQuery ? Number(trimmed) : trimmed);
+        if (!isMounted.current) return;
+        setSearchPokemon([result]);
+        setMode('search');
+      }
     } catch {
       setSearchPokemon([]);
       setError(true);
@@ -370,6 +372,23 @@ export function Home() {
     return false; // Search has no load more
   }, [mode, allHasMore, typeOffset, typePokemonNames.length]);
 
+  const gridKey = useMemo(() => {
+    if (mode === 'all') return `all-${sort}`;
+    if (mode === 'type') return `type-${selectedType}-${sort}`;
+    if (mode === 'search') return `search-${query}-${sort}`;
+    return 'default';
+  }, [mode, sort, selectedType, query]);
+
+  const prevGridKeyRef = useRef<string | null>(null);
+  const gridGenerationRef = useRef(0);
+
+  if (gridKey !== prevGridKeyRef.current) {
+    prevGridKeyRef.current = gridKey;
+    gridGenerationRef.current += 1;
+  }
+
+  const gridKeyGeneration = gridGenerationRef.current;
+
   // Derived state: sorted/filtered dataset to display
   const displayedPokemon = useMemo(() => {
     let list: Pokemon[] = [];
@@ -471,12 +490,14 @@ export function Home() {
           
           {!isLoading && !error && displayedPokemon.length > 0 && (
             <PokemonGrid
+              key={gridKey}
               pokemon={displayedPokemon}
               linkState={{
                 query,
                 mode,
                 selectedType: selectedType,
               }}
+              generation={gridKeyGeneration}
             />
           )}
         </div>

@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import type { Pokemon } from '../types/pokemon';
 import { getTypeColor } from '../utils/pokemonTypeColors';
@@ -17,6 +17,10 @@ interface PokemonCardProps {
   onSelect?: (id: number) => void;
   /** Optional router state passed to the navigation Link (e.g. to remember origin) */
   linkState?: object;
+  /** Grid index used for stagger delay on initial load animation */
+  index?: number;
+  /** Grid render generation so cards can distinguish initial load from later refreshes */
+  generation?: number;
 }
 
 function getArtwork(pokemon: Pokemon): string {
@@ -27,13 +31,22 @@ function getArtwork(pokemon: Pokemon): string {
   );
 }
 
-export const PokemonCard = memo(function PokemonCard({ pokemon, onSelect, linkState }: PokemonCardProps) {
+export const PokemonCard = memo(function PokemonCard({ pokemon, onSelect, linkState, index = 0, generation }: PokemonCardProps) {
+  const isFirstGridRender = generation === 1;
   const { isFavorite, toggleFavorite, isCompareSelected, toggleComparison } = useAppState();
   const primaryType = pokemon.types[0]?.type.name ?? 'normal';
   const typeColor = getTypeColor(primaryType);
   const artwork = getArtwork(pokemon);
   const hpStat = pokemon.stats.find(s => s.stat.name === 'hp');
-  const { ref, isInView } = useInView();
+  const [isLoadAnimating, setIsLoadAnimating] = useState(true);
+
+  const handleAnimationEnd = useCallback(() => {
+    setIsLoadAnimating(false);
+  }, []);
+
+  const { ref, isInView } = useInView(
+    !isFirstGridRender && isLoadAnimating ? { rootMargin: '0px 0px 9999px 0px' } : undefined
+  );
 
   const favorite = isFavorite(pokemon.id);
   const compareSelected = isCompareSelected(pokemon.id);
@@ -47,14 +60,18 @@ export const PokemonCard = memo(function PokemonCard({ pokemon, onSelect, linkSt
     }
   };
 
+  const shouldScanAnimate = isFirstGridRender && isInView;
+  const shouldLoadAnimate = !isFirstGridRender && isLoadAnimating;
+
   return (
     <Link
       ref={ref as any}
       to={`/pokemon/${pokemon.name}`}
       state={linkState}
-      className={`pokemon-card ${isInView ? 'pokemon-card--visible' : ''} ${favorite ? 'pokemon-card--favorite' : ''} ${compareSelected ? 'pokemon-card--compare' : ''}`}
-      style={{ '--card-type-color': typeColor } as React.CSSProperties}
+      className={`pokemon-card ${shouldScanAnimate ? 'pokemon-card--visible' : ''} ${shouldLoadAnimate ? 'pokemon-card--load-enter' : ''} ${favorite ? 'pokemon-card--favorite' : ''} ${compareSelected ? 'pokemon-card--compare' : ''}`}
+      style={{ '--card-type-color': typeColor, '--card-index': index } as React.CSSProperties}
       data-cry-url={pokemon.cryUrl ?? undefined}
+      onAnimationEnd={handleAnimationEnd}
     >
       <span className="pokemon-card__bg-id" data-id={formatPokemonId(pokemon.id)}>{formatPokemonId(pokemon.id)}</span>
       <span className="pokemon-card__type-bar" aria-hidden="true" />

@@ -7,13 +7,15 @@ interface Props {
   onSelect?: (id: number) => void;
   /** Optional router state passed to the navigation Link (e.g. to remember origin) */
   linkState?: object;
+  /** Grid render generation so cards can distinguish initial load from later refreshes */
+  generation?: number;
 }
 
-export function PokemonGrid({ pokemon, onSelect, linkState }: Props) {
+export function PokemonGrid({ pokemon, onSelect, linkState, generation }: Props) {
   return (
     <div className="pokemon-grid">
-      {pokemon.map(item => (
-        <PokemonCard key={item.name} pokemon={item} onSelect={onSelect} linkState={linkState} />
+      {pokemon.map((item, index) => (
+        <PokemonCard key={item.name} pokemon={item} index={index} generation={generation} onSelect={onSelect} linkState={linkState} />
       ))}
     </div>
   );

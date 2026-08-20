@@ -269,16 +269,6 @@
   color: var(--color-accent);
 }
 
-.search-bar__suggestion--empty {
-  padding: 12px 14px;
-  color: var(--color-text-tertiary);
-  font-size: 0.85rem;
-  font-style: italic;
-  cursor: default;
-  pointer-events: none;
-  text-align: center;
-}
-
 .search-bar__suggestion-name {
   text-transform: capitalize;
 }
