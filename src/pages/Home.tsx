@@ -8,9 +8,17 @@ import { PokemonGrid } from '../components/PokemonGrid';
 import { EmptyState } from '../components/EmptyState';
 import { LoadingSkeleton } from '../components/LoadingSkeleton';
 import { ErrorState } from '../components/ErrorState';
-import { getPokemonList, getPokemonDetailsBatch, getPokemon, getPokemonNamesByType } from '../services/pokemonApi';
+import {
+  getPokemonList,
+  getPokemonDetailsBatch,
+  getPokemon,
+  getPokemonNamesByType,
+  getAllPokemonNames,
+} from '../services/pokemonApi';
 import pokeballImage from '../assets/branding/pokeball.png';
 import './pages.css';
+
+const MAX_SUGGESTIONS = 8;
 
 export function Home() {
   const location = useLocation();
@@ -30,6 +38,9 @@ export function Home() {
   const [typePokemonNames, setTypePokemonNames] = useState<string[]>([]);
   const [typePokemonDetailed, setTypePokemonDetailed] = useState<Pokemon[]>([]);
   const [typeOffset, setTypeOffset] = useState(0);
+
+  // All Pokémon names for autocomplete (loaded once, shared cache)
+  const [allNames, setAllNames] = useState<string[]>([]);
 
   // UI controller values
   const [query, setQuery] = useState('');
@@ -62,6 +73,7 @@ export function Home() {
 
   const isMounted = useRef(true);
   const searchTimeoutRef = useRef<number | null>(null);
+  const namesLoadedRef = useRef(false);
 
   useEffect(() => {
     isMounted.current = true;
@@ -71,6 +83,29 @@ export function Home() {
         clearTimeout(searchTimeoutRef.current);
         searchTimeoutRef.current = null;
       }
+    };
+  }, []);
+
+  // Load all Pokémon names once for autocomplete suggestions
+  useEffect(() => {
+    if (namesLoadedRef.current) return;
+    namesLoadedRef.current = true;
+
+    let cancelled = false;
+    getAllPokemonNames()
+      .then(names => {
+        if (!cancelled && isMounted.current) {
+          setAllNames(names);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          namesLoadedRef.current = false;
+        }
+      });
+
+    return () => {
+      cancelled = true;
     };
   }, []);
 
@@ -139,15 +174,44 @@ export function Home() {
     const trimmed = searchQuery.trim();
     if (!trimmed) {
       setMode('all');
-      setAllPokemon(prev => prev.length === 0 ? [] : prev);
+      setAllPokemon(prev => (prev.length === 0 ? [] : prev));
       return;
     }
 
     setIsLoading(true);
     setError(false);
     setSelectedType(null);
+
     try {
       const searchParam = isNaN(Number(trimmed)) ? trimmed.toLowerCase() : Number(trimmed);
+
+      // Try partial/substring match against locally cached Pokémon first
+      const lowerQuery = typeof searchParam === 'string' ? searchParam.toLowerCase() : String(searchParam);
+      const isNumericQuery = typeof searchParam === 'number' || /^\d+$/.test(trimmed);
+
+      if (!isNumericQuery && allNames.length > 0) {
+        const matchedName = allNames.find(
+          name => name.startsWith(lowerQuery) || name.includes(lowerQuery)
+        );
+        if (matchedName) {
+          const result = await getPokemon(matchedName);
+          if (!isMounted.current) return;
+          setSearchPokemon([result]);
+          setMode('search');
+          setIsLoading(false);
+          const url = new URL(window.location.href);
+          const currentQuery = trimmed;
+          if (currentQuery) {
+            url.searchParams.set('q', currentQuery);
+          } else {
+            url.searchParams.delete('q');
+          }
+          window.history.replaceState({}, document.title, url);
+          return;
+        }
+      }
+
+      // Fallback to exact lookup via API (supports full names and IDs)
       const result = await getPokemon(searchParam);
 
       setSearchPokemon([result]);
@@ -169,9 +233,9 @@ export function Home() {
         window.history.replaceState({}, document.title, url);
       }
     }
-  }, [query]);
+  }, [query, allNames]);
 
-  // Load first page of 'all' on mount
+  // Fetch first page of 'all' on mount
   useEffect(() => {
     fetchAllInitial();
   }, [fetchAllInitial]);
@@ -274,6 +338,24 @@ export function Home() {
     setSearchPokemon([]);
   }, []);
 
+  // Compute autocomplete suggestions from loaded name list
+  const suggestions = useMemo(() => {
+    const trimmed = query.trim();
+    if (!trimmed) return [];
+    const lower = trimmed.toLowerCase();
+    const isNumeric = /^\d+$/.test(trimmed);
+    if (isNumeric) return [];
+
+    const matches = allNames.filter(name =>
+      name.startsWith(lower) || name.includes(lower)
+    );
+    return matches.slice(0, MAX_SUGGESTIONS);
+  }, [query, allNames]);
+
+  const handleSuggestionSelect = useCallback((name: string) => {
+    setQuery(name);
+  }, []);
+
   // Derived state: Total Count & hasMore
   const totalCount = useMemo(() => {
     if (mode === 'all') return allTotalCount;
@@ -325,7 +407,12 @@ export function Home() {
           <p className="hero__text">
             Explore Pokémon, inspect their stats, filter by type, and build your own collection.
           </p>
-          <SearchBar onSearch={setQuery} onClear={handleClearAllFilters} />
+          <SearchBar
+            onSearch={setQuery}
+            onClear={handleClearAllFilters}
+            suggestions={suggestions}
+            onSuggestionSelect={handleSuggestionSelect}
+          />
         </div>
           <div className="hero__feature">
             <div className="hero-pokeball">

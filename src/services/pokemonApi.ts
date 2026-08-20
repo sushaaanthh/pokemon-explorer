@@ -77,3 +77,44 @@ export async function getPokemonByType(type: string): Promise<Pokemon[]> {
   );
   return Promise.all(promises);
 }
+
+let allPokemonNamesCache: string[] | null = null;
+let allPokemonNamesPromise: Promise<string[]> | null = null;
+
+async function fetchAllPokemonNames(): Promise<string[]> {
+  const names: string[] = [];
+  let offset = 0;
+  const limit = 100;
+  let next: string | null = `${API_BASE}/pokemon?limit=${limit}&offset=${offset}`;
+
+  while (next) {
+    const data = await fetchJson<PokemonListResponse>(next);
+    names.push(...data.results.map(item => item.name));
+    next = data.next;
+    offset += limit;
+  }
+
+  return names;
+}
+
+export async function getAllPokemonNames(): Promise<string[]> {
+  if (allPokemonNamesCache !== null) {
+    return allPokemonNamesCache;
+  }
+  if (allPokemonNamesPromise) {
+    return allPokemonNamesPromise;
+  }
+
+  allPokemonNamesPromise = fetchAllPokemonNames()
+    .then(names => {
+      allPokemonNamesCache = names;
+      allPokemonNamesPromise = null;
+      return names;
+    })
+    .catch(err => {
+      allPokemonNamesPromise = null;
+      throw err;
+    });
+
+  return allPokemonNamesPromise;
+}
