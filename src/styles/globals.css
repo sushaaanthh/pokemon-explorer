@@ -153,6 +153,196 @@ body::after {
   opacity: 0.6;
 }
 
+[data-theme='light'] body::after {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.02) 3px,
+    rgba(0, 0, 0, 0.02) 6px
+  );
+  opacity: 0.5;
+}
+
+/* ---- HUD Ambient Grid Drift ---- */
+@keyframes hud-grid-drift {
+  0%, 100% { background-position: 0 0, 0 0, 0 0; }
+  50% { background-position: 0 0, 24px 24px, 24px 24px; }
+}
+
+body {
+  animation: hud-grid-drift 60s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body {
+    animation: none;
+  }
+}
+
+/* ---- HUD Status Indicator ---- */
+.hud-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.68rem;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--hud-status-active);
+}
+
+.hud-status::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--hud-status-active);
+  box-shadow: 0 0 6px var(--hud-status-glow);
+  animation: hud-status-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes hud-status-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-status::before {
+    animation: none;
+  }
+}
+
+/* ---- HUD Tech Label ---- */
+.hud-tech-label {
+  font-size: 0.65rem;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--hud-tech-label);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hud-tech-label::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  background: var(--color-accent);
+  opacity: 0.6;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+/* ---- HUD Data Readout ---- */
+.hud-data-readout {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: var(--fw-medium);
+  letter-spacing: 0.04em;
+  color: var(--hud-data-readout);
+  text-transform: uppercase;
+}
+
+/* ---- HUD Scan Sweep (hero) ---- */
+@keyframes hud-scan-sweep {
+  0% { transform: translateY(-100%); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
+.hud-scan-sweep {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--hud-ring-color), transparent);
+  box-shadow: 0 0 12px var(--hud-ring-glow), 0 0 24px var(--hud-ring-glow);
+  pointer-events: none;
+  z-index: 3;
+  animation: hud-scan-sweep 4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-scan-sweep {
+    animation: none;
+    display: none;
+  }
+}
+
+/* ---- HUD Corner Brackets (utility) ---- */
+.hud-brackets {
+  position: relative;
+}
+
+.hud-brackets::before,
+.hud-brackets::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.hud-brackets::before {
+  top: 0;
+  right: 0;
+  border-left: 1px solid var(--hud-corner-bracket);
+  border-bottom: 1px solid var(--hud-corner-bracket);
+  border-radius: 0 0 0 2px;
+}
+
+.hud-brackets::after {
+  bottom: 0;
+  left: 0;
+  border-right: 1px solid var(--hud-corner-bracket);
+  border-top: 1px solid var(--hud-corner-bracket);
+  border-radius: 0 2px 0 0;
+}
+
+/* ---- HUD Pulse Ring ---- */
+@keyframes hud-pulse-ring {
+  0%, 100% { box-shadow: 0 0 0 0 var(--hud-ring-glow); }
+  50% { box-shadow: 0 0 0 8px transparent; }
+}
+
+.hud-pulse-ring {
+  animation: hud-pulse-ring 3s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-pulse-ring {
+    animation: none;
+  }
+}
+
+/* ---- HUD Crosshair ---- */
+.hud-crosshair {
+  position: relative;
+}
+
+.hud-crosshair::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--hud-border);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity var(--transition-base);
+}
+
+.hud-crosshair:hover::before {
+  opacity: 1;
+}
+
 /* ---- HUD Panel Base ---- */
 .hud-panel {
   position: relative;

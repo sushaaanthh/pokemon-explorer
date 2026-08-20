@@ -190,8 +190,8 @@
   right: 0;
   width: 12px;
   height: 12px;
-  border-left: 1px solid var(--hud-border);
-  border-bottom: 1px solid var(--hud-border);
+  border-left: 1px solid var(--hud-corner-bracket);
+  border-bottom: 1px solid var(--hud-corner-bracket);
   z-index: 3;
   pointer-events: none;
 }
@@ -203,8 +203,8 @@
   left: 0;
   width: 12px;
   height: 12px;
-  border-right: 1px solid var(--hud-border);
-  border-top: 1px solid var(--hud-border);
+  border-right: 1px solid var(--hud-corner-bracket);
+  border-top: 1px solid var(--hud-corner-bracket);
   z-index: 3;
   pointer-events: none;
 }
@@ -216,6 +216,31 @@
   background: radial-gradient(circle, color-mix(in srgb, var(--card-type-color) 25%, transparent) 0%, transparent 70%);
   filter: blur(40px);
   z-index: 1;
+}
+
+.detail-artwork-panel__scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--card-type-color), transparent);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+@media (hover: hover) {
+  .detail-artwork-panel:hover .detail-artwork-panel__scan {
+    animation: card-scan-line 1.8s linear infinite;
+    opacity: 0.3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .detail-artwork-panel__scan {
+    animation: none !important;
+    display: none;
+  }
 }
 
 .detail-artwork-id {
@@ -474,6 +499,10 @@
   height: 1px;
   background: var(--color-accent);
   box-shadow: 0 0 6px var(--hud-glow-strong);
+}
+
+.detail-section-title .hud-tech-label {
+  font-size: 0.68rem;
 }
 
 .detail-section-heading {

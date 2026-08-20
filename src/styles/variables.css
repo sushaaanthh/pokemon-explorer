@@ -59,6 +59,15 @@
   --hud-grid-color: rgba(255, 255, 255, 0.025);
   --hud-grid-color-strong: rgba(230, 57, 70, 0.035);
 
+  --hud-status-active: #4ADE80;
+  --hud-status-glow: rgba(74, 222, 128, 0.35);
+  --hud-scan-color: rgba(230, 57, 70, 0.06);
+  --hud-tech-label: rgba(255, 255, 255, 0.35);
+  --hud-ring-color: rgba(230, 57, 70, 0.15);
+  --hud-ring-glow: rgba(230, 57, 70, 0.08);
+  --hud-data-readout: rgba(255, 255, 255, 0.2);
+  --hud-corner-bracket: rgba(230, 57, 70, 0.3);
+
   /* ---- Transitions ---- */
   --transition-fast: 150ms ease;
   --transition-base: 250ms ease;
@@ -140,4 +149,21 @@
 
   --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06);
   --shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.1);
+
+  --hud-border: rgba(230, 57, 70, 0.18);
+  --hud-border-subtle: rgba(0, 0, 0, 0.06);
+  --hud-glow: rgba(230, 57, 70, 0.08);
+  --hud-glow-strong: rgba(230, 57, 70, 0.18);
+  --hud-separator: 1px solid rgba(0, 0, 0, 0.08);
+  --hud-grid-color: rgba(0, 0, 0, 0.03);
+  --hud-grid-color-strong: rgba(230, 57, 70, 0.04);
+
+  --hud-status-active: #16A34A;
+  --hud-status-glow: rgba(22, 163, 74, 0.25);
+  --hud-scan-color: rgba(230, 57, 70, 0.04);
+  --hud-tech-label: rgba(0, 0, 0, 0.3);
+  --hud-ring-color: rgba(230, 57, 70, 0.12);
+  --hud-ring-glow: rgba(230, 57, 70, 0.06);
+  --hud-data-readout: rgba(0, 0, 0, 0.15);
+  --hud-corner-bracket: rgba(230, 57, 70, 0.2);
 }

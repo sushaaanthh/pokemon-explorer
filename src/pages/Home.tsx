@@ -330,6 +330,11 @@ export function Home() {
           <div className="hero__feature">
             <div className="hero-pokeball">
               <span className="hero-pokeball__glow" aria-hidden="true" />
+              <div className="hero-pokeball__hud-ring" aria-hidden="true">
+                <span className="hero-pokeball__hud-ring-label">SCAN</span>
+                <span className="hero-pokeball__hud-status">ACTIVE</span>
+              </div>
+              <span className="hero-pokeball__scan-sweep" aria-hidden="true" />
               <img src={pokeballImage} alt="Poké Ball" className="hero-pokeball__image" decoding="async" fetchPriority="high" width="450" height="450" />
             </div>
           </div>

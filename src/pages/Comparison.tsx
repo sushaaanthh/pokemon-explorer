@@ -468,6 +468,7 @@ export function Comparison() {
             type="button"
           >
             <span className="compare-glow" aria-hidden="true" />
+              <span className="compare-status-indicator" aria-hidden="true" />
               <span className="compare-id">{formatPokemonId(leftPokemon.id)}</span>
               <div
                 className="compare-remove"
@@ -541,6 +542,7 @@ export function Comparison() {
             type="button"
           >
             <span className="compare-glow" aria-hidden="true" />
+            <span className="compare-status-indicator" aria-hidden="true" />
             <span className="compare-id">{formatPokemonId(rightPokemon.id)}</span>
             <div
               className="compare-remove"
@@ -636,25 +638,27 @@ export function Comparison() {
                 rightClass += ' compare-stat-value--equal';
               }
 
-              return (
-                <div className="compare-stat-row" key={stat}>
-                  <p className="compare-stat-name">{formatPokemonName(stat)}</p>
-                  <div className="compare-stat-bar-container">
-                    <span className={leftClass}>{leftVal}</span>
-                    <div className="compare-stat-bar-wrapper">
-                      <div
-                        className={leftBarClass}
-                        style={{ width: `${leftPct}%`, backgroundColor: leftColor }}
-                      />
-                      <div
-                        className={rightBarClass}
-                        style={{ width: `${rightPct}%`, backgroundColor: rightColor }}
-                      />
-                    </div>
-                    <span className={rightClass}>{rightVal}</span>
-                  </div>
-                </div>
-              );
+               return (
+                 <div className="compare-stat-row" key={stat}>
+                   <p className="compare-stat-name">
+                     <span className="hud-tech-label">{formatPokemonName(stat)}</span>
+                   </p>
+                   <div className="compare-stat-bar-container">
+                     <span className={leftClass}>{leftVal}</span>
+                     <div className="compare-stat-bar-wrapper">
+                       <div
+                         className={leftBarClass}
+                         style={{ width: `${leftPct}%`, backgroundColor: leftColor }}
+                       />
+                       <div
+                         className={rightBarClass}
+                         style={{ width: `${rightPct}%`, backgroundColor: rightColor }}
+                       />
+                     </div>
+                     <span className={rightClass}>{rightVal}</span>
+                   </div>
+                 </div>
+               );
             })}
           </div>
         </section>

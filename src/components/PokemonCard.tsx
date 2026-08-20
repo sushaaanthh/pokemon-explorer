@@ -56,11 +56,12 @@ export const PokemonCard = memo(function PokemonCard({ pokemon, onSelect, linkSt
       style={{ '--card-type-color': typeColor } as React.CSSProperties}
       data-cry-url={pokemon.cryUrl ?? undefined}
     >
-      <span className="pokemon-card__bg-id">{formatPokemonId(pokemon.id)}</span>
+      <span className="pokemon-card__bg-id" data-id={formatPokemonId(pokemon.id)}>{formatPokemonId(pokemon.id)}</span>
       <span className="pokemon-card__type-bar" aria-hidden="true" />
 
       <div className="pokemon-card__top">
         <span className="pokemon-card__id">{formatPokemonId(pokemon.id)}</span>
+        <span className="pokemon-card__status" aria-hidden="true" />
         <div className="pokemon-card__actions">
           <CryButton cryUrl={pokemon.cryUrl} />
           <FavoriteButton isFavorite={favorite} onToggle={() => toggleFavorite(pokemon.id)} />
@@ -69,6 +70,7 @@ export const PokemonCard = memo(function PokemonCard({ pokemon, onSelect, linkSt
 
       <div className="pokemon-card__artwork-wrap">
         <div className="pokemon-card__glow" />
+        <span className="pokemon-card__scan-line" aria-hidden="true" />
         <img
           className="pokemon-card__artwork"
           src={artwork}

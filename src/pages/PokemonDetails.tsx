@@ -203,6 +203,7 @@ export function PokemonDetails() {
         {/* Left: Artwork Panel */}
         <section className="detail-artwork-panel">
           <span className="detail-artwork-glow" aria-hidden="true" />
+          <span className="detail-artwork-panel__scan" aria-hidden="true" />
           <span className="detail-artwork-id">{formatPokemonId(pokemon.id)}</span>
           <img
             src={imgSrc}
@@ -218,7 +219,10 @@ export function PokemonDetails() {
 
         {/* Right: Info Panel */}
         <section className="detail-info">
-          <p className="detail-eyebrow">Pokédex Entry</p>
+          <p className="detail-eyebrow">
+            Pokédex Entry
+            <span className="hud-status" aria-hidden="true">Specimen Active</span>
+          </p>
           <div className="detail-title-row">
             <h1 className="detail-name">{formatPokemonName(pokemon.name)}</h1>
             <FavoriteButton isFavorite={isFavorite(pokemon.id)} onToggle={() => toggleFavorite(pokemon.id)} size={24} />
@@ -272,7 +276,9 @@ export function PokemonDetails() {
 
           {/* Base Stats */}
           <div className="detail-stats">
-            <p className="detail-section-title">Base Stats</p>
+            <p className="detail-section-title">
+              <span className="hud-tech-label">Base Stats</span>
+            </p>
             {pokemon.stats.map((s, index) => {
               const maxStat = 255;
               const percentage = Math.min((s.base_stat / maxStat) * 100, 100);
@@ -311,7 +317,7 @@ export function PokemonDetails() {
           {/* Moves */}
           <div className="detail-moves">
             <p className="detail-section-title">
-              Moves
+              <span className="hud-tech-label">Moves</span>
               <span className="detail-moves-count">{pokemon.moves.length}</span>
             </p>
             <div className="detail-moves-grid">

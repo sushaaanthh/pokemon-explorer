@@ -215,6 +215,7 @@
   z-index: 2;
   position: relative;
   clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+  animation: hud-pulse-ring 3s ease-in-out infinite;
 }
 
 .compare-panel {
@@ -292,6 +293,25 @@
   background: radial-gradient(circle, color-mix(in srgb, var(--card-type-color) 20%, transparent) 0%, transparent 70%);
   filter: blur(40px);
   z-index: 1;
+}
+
+.compare-status-indicator {
+  position: absolute;
+  top: 16px;
+  right: 52px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--hud-status-active);
+  box-shadow: 0 0 6px var(--hud-status-glow);
+  animation: hud-status-pulse 2.5s ease-in-out infinite;
+  z-index: 5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .compare-status-indicator {
+    animation: none;
+  }
 }
 
 .compare-id {
