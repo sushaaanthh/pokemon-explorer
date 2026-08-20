@@ -88,7 +88,7 @@ async function fetchAllPokemonNames(): Promise<string[]> {
   let next: string | null = `${API_BASE}/pokemon?limit=${limit}&offset=${offset}`;
 
   while (next) {
-    const data = await fetchJson<PokemonListResponse>(next);
+    const data: PokemonListResponse = await fetchJson<PokemonListResponse>(next);
     names.push(...data.results.map(item => item.name));
     next = data.next;
     offset += limit;
