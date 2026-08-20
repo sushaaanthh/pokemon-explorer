@@ -97,7 +97,7 @@ export function useAudioSystem(): AudioSystemState {
     try {
       const audio = new Audio('/assets/vault/door-sound.mpeg');
       currentVaultAudio = audio;
-      audio.currentTime = 0;
+      audio.currentTime = 0.5;
       const onEnded = () => {
         vaultPlaying = false;
         currentVaultAudio = null;
