@@ -166,8 +166,8 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--hud-status-active);
-  box-shadow: 0 0 6px var(--hud-status-glow);
+  background: var(--color-accent);
+  box-shadow: 0 0 6px var(--hud-glow-strong);
   animation: hud-status-pulse 2.5s ease-in-out infinite;
   flex-shrink: 0;
 }
@@ -373,21 +373,14 @@
   box-shadow: var(--shadow-inner-glow), var(--shadow-card-hover), 0 0 20px var(--hud-glow);
 }
 
-.pokemon-card--favorite .pokemon-card__status {
-  background: var(--color-accent);
-  box-shadow: 0 0 8px var(--hud-glow-strong);
-  animation: none;
-  opacity: 1;
-}
-
 .pokemon-card--compare {
   border-color: color-mix(in srgb, var(--card-type-color) 50%, var(--hud-border));
   box-shadow: var(--shadow-inner-glow), var(--shadow-card-hover), 0 0 20px var(--hud-glow);
 }
 
 .pokemon-card--compare .pokemon-card__status {
-  background: var(--card-type-color);
-  box-shadow: 0 0 8px var(--hud-glow-strong);
+  background: var(--hud-status-active);
+  box-shadow: 0 0 8px var(--hud-status-glow);
   animation: none;
   opacity: 1;
 }

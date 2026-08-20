@@ -3,12 +3,11 @@
    =================================================== */
 
 .sort-select {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: var(--space-3);
-  min-width: 0;
+  min-width: fit-content;
   max-width: 100%;
-  flex-wrap: wrap;
 }
 
 .sort-select__label {
@@ -25,7 +24,7 @@
   display: inline-flex;
   align-items: center;
   max-width: 100%;
-  min-width: 0;
+  min-width: fit-content;
 }
 
 .sort-select__input {
@@ -44,7 +43,7 @@
               box-shadow var(--transition-fast);
   clip-path: polygon(4px 0, 100% 0, 100% calc(100% - 4px), calc(100% - 4px) 100%, 0 100%, 0 4px);
   max-width: 100%;
-  min-width: 0;
+  min-width: 130px;
 }
 
 .sort-select__input:hover {
@@ -75,6 +74,8 @@
 
 @media (max-width: 640px) {
   .sort-select {
+    display: flex;
+    flex-wrap: wrap;
     gap: var(--space-2);
   }
 
