@@ -19,10 +19,11 @@ The project is being developed as part of a frontend engineering evaluation, wit
 
 ### Search
 
-- Search Pokémon by name
+- Search Pokémon by name or ID
 - Retrieve Pokémon data directly from PokéAPI
 - Handle invalid Pokémon names gracefully
 - Provide clear empty and error states
+- Press `/` to focus the search bar from anywhere on the page
 
 ### Filtering & Sorting
 
@@ -47,6 +48,7 @@ Each Pokémon has a dedicated detail view containing:
 - Abilities
 - Base statistics
 - Move information
+- Playable Pokémon cry (audio)
 
 ### Favorites
 
@@ -57,17 +59,43 @@ Each Pokémon has a dedicated detail view containing:
 ### Pokémon Comparison
 
 - Select two Pokémon for comparison
-- Compare key statistics such as:
+- Compare key statistics:
   - HP
   - Attack
   - Defense
+  - Special Attack
+  - Special Defense
   - Speed
+- Side-by-side comparison stage with visual stat bars
+- Comparison full modal when the comparison limit is reached
 
 ### Themes
 
 - Dark mode
 - Light mode
 - Persistent theme preference
+
+### Audio
+
+- UI interaction sounds (navigation, favorites, comparison, confirmations)
+- Pokémon cry playback on the detail page
+- Vault transition sound on page navigation
+
+### Animations
+
+- Vault door open/close transition between pages
+- Card entrance and hover micro-interactions
+- Stat bar animations on the detail and comparison pages
+- Skeleton loading states
+- Respects `prefers-reduced-motion`
+
+### Accessibility
+
+- Skip to main content link
+- Keyboard navigation support
+- Focus-visible states on interactive elements
+- ARIA labels and roles
+- Reduced motion support
 
 ### UI States
 
@@ -79,6 +107,7 @@ The application includes dedicated states for:
 - Pokémon not found
 - Empty search results
 - Empty favorites
+- Comparison full
 
 ### Responsive Design
 
@@ -124,19 +153,20 @@ If Gang of Three is unavailable in the environment, Shikamaru is used as the dis
 
 ### Frontend
 
-- React
+- React 19
 - TypeScript
 - Vite
-- CSS
+- React Router DOM
+- CSS (custom properties, responsive media queries)
 
 ### API
 
-- PokéAPI
+- [PokéAPI](https://pokeapi.co/api/v2/)
 
 ### Development
 
 - Vite HMR
-- ESLint / Oxlint tooling
+- Oxlint
 - TypeScript
 
 ---
@@ -159,9 +189,17 @@ The application communicates with the API through a dedicated service layer rath
 pokemon-explorer/
 │
 ├── public/
-│   └── assets/
+│   ├── assets/
+│   │   └── vault/
+│   ├── icons.svg
+│   └── logo.png
 │
 ├── src/
+│   ├── assets/
+│   │   ├── branding/
+│   │   ├── fonts/
+│   │   └── vault/
+│   │
 │   ├── components/
 │   │   ├── Navigation.tsx
 │   │   ├── SearchBar.tsx
@@ -172,20 +210,21 @@ pokemon-explorer/
 │   │   ├── FeaturedPokemon.tsx
 │   │   ├── FavoriteButton.tsx
 │   │   ├── CompareButton.tsx
-│   │   ├── ComparisonTray.tsx
-│   │   ├── PokemonStats.tsx
-│   │   ├── PokemonAbilities.tsx
-│   │   ├── PokemonMoves.tsx
-│   │   ├── ThemeToggle.tsx
+│   │   ├── ComparisonFullModal.tsx
+│   │   ├── CryButton.tsx
 │   │   ├── LoadingSkeleton.tsx
 │   │   ├── ErrorState.tsx
-│   │   └── EmptyState.tsx
+│   │   ├── EmptyState.tsx
+│   │   ├── ThemeToggle.tsx
+│   │   ├── VaultLink.tsx
+│   │   └── VaultTransitionContext.tsx
 │   │
 │   ├── pages/
 │   │   ├── Home.tsx
 │   │   ├── Favorites.tsx
 │   │   ├── Comparison.tsx
-│   │   └── PokemonDetails.tsx
+│   │   ├── PokemonDetails.tsx
+│   │   └── NotFound.tsx
 │   │
 │   ├── services/
 │   │   └── pokemonApi.ts
@@ -193,7 +232,14 @@ pokemon-explorer/
 │   ├── hooks/
 │   │   ├── usePokemon.ts
 │   │   ├── useFavorites.ts
-│   │   └── useTheme.ts
+│   │   ├── useComparison.ts
+│   │   ├── useTheme.ts
+│   │   ├── useAudioSystem.ts
+│   │   ├── useCry.ts
+│   │   └── useInView.ts
+│   │
+│   ├── context/
+│   │   └── AppStateContext.tsx
 │   │
 │   ├── types/
 │   │   └── pokemon.ts
@@ -207,12 +253,60 @@ pokemon-explorer/
 │   │   ├── globals.css
 │   │   └── variables.css
 │   │
+│   ├── mock/
+│   │   └── pokemonMockData.ts
+│   │
 │   ├── App.tsx
 │   └── main.tsx
 │
-├── public/
-├── README.md
+├── index.html
 ├── package.json
 ├── tsconfig.json
 ├── vite.config.ts
-└── .gitignore
+├── vercel.json
+└── README.md
+```
+
+---
+
+## Setup & Installation
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+
+# Run linter
+npm run lint
+```
+
+---
+
+## Deployment
+
+The project includes a [`vercel.json`](vercel.json) configuration for deployment on Vercel. The rewrite rule ensures client-side routing works correctly by directing all routes to `index.html`.
+
+---
+
+## Browser Support
+
+- Modern browsers with CSS custom properties and `AudioContext` support
+- Responsive layouts tested for desktop, tablet, and mobile viewports
+
+---
+
+## License
+
+This project is private and intended for evaluation purposes.
+
+---
+
+[PokéAPI]: https://pokeapi.co/
