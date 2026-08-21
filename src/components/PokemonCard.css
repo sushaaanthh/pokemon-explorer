@@ -407,7 +407,17 @@
   }
 
   .pokemon-card__artwork-wrap {
-    min-height: 160px;
+    min-height: 170px;
+    margin-top: 6px;
+  }
+
+  .pokemon-card__artwork {
+    width: min(180px, 62%);
+  }
+
+  .pokemon-card__bg-id {
+    font-size: 4.5rem;
+    top: -18px;
   }
 
   .pokemon-card__name {
@@ -442,7 +452,16 @@
   }
 
   .pokemon-card__artwork-wrap {
-    min-height: 140px;
+    min-height: 150px;
+  }
+
+  .pokemon-card__artwork {
+    width: min(160px, 60%);
+  }
+
+  .pokemon-card__bg-id {
+    font-size: 3.8rem;
+    top: -14px;
   }
 
   .pokemon-card__footer {
@@ -487,7 +506,16 @@
   }
 
   .pokemon-card__artwork-wrap {
-    min-height: 120px;
+    min-height: 130px;
+  }
+
+  .pokemon-card__artwork {
+    width: min(140px, 58%);
+  }
+
+  .pokemon-card__bg-id {
+    font-size: 3.2rem;
+    top: -12px;
   }
 
   .pokemon-card__name {

@@ -107,6 +107,24 @@
   height: 330px;
 }
 
+@media (max-width: 900px) {
+  .card-skeleton {
+    height: 296px;
+  }
+}
+
+@media (max-width: 600px) {
+  .card-skeleton {
+    height: 316px;
+  }
+}
+
+@media (max-width: 420px) {
+  .card-skeleton {
+    height: 288px;
+  }
+}
+
 .skeleton {
   background: linear-gradient(
     90deg,
@@ -150,11 +168,5 @@
   }
   .skeleton::after {
     animation: none;
-  }
-}
-
-@media (max-width: 420px) {
-  .card-skeleton {
-    height: 260px;
   }
 }
