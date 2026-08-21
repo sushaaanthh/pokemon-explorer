@@ -12,10 +12,12 @@
 
 @media (max-width: 768px) {
   .compare-stage {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: 10px;
-    align-items: center;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .compare-vs-badge {
+    margin: 0 auto;
   }
 
   .compare-stage__header {
@@ -61,27 +63,6 @@
 
   .compare-selection__load-more {
     margin-top: 24px;
-  }
-
-  .compare-selection .pokemon-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .compare-selection .pokemon-card {
-    min-height: auto;
-    padding: 16px;
-  }
-
-  .compare-selection .pokemon-card__artwork-wrap {
-    height: auto;
-    min-height: 140px;
-  }
-
-  .compare-selection .pokemon-card__bg-id {
-    font-size: 4rem;
-    right: -4px;
-    top: -20px;
   }
 
   .compare-selection__popover {
